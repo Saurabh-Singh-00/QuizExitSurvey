@@ -116,3 +116,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Added Auth for Abstract User
+AUTH_USER_MODEL = "users.User"

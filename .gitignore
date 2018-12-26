@@ -1,0 +1,11 @@
+#Ignore database file
+db.sqlite3
+
+#Ignore migrations
+**/migrations
+
+#Ignore .idea folder
+**/.idea
+
+#Ignore Virtual Environment
+venv/

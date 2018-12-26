@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+        <div class="col-md-8 col-sm-12 offset-md-2">
+            <button id="add_quiz_btn" class="btn btn-primary mt-3 mb-3" onclick="addButtonClick()">Add New Quiz</button>
+            <form style="display: none" id="add_quiz_form" method="POST">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input class="btn btn-outline-success" type="submit"/>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script type="text/javascript" language="JavaScript">
+        function addButtonClick() {
+            let form = document.getElementById('add_quiz_form');
+            form.style.display = 'block';
+        }
+    </script>
+{% endblock scripts %}

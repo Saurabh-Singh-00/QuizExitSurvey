@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+{#                <p>Question : {{ form.text }}</p>#}
+{#                <p>Choice A : {{ form.a }}</p>#}
+{#                <p>Choice B : {{ form.b }}</p>#}
+{#                <p>Choice C : {{ form.c }}</p>#}
+{#                <p>Choice D : {{ form.d }}</p>#}
+{#                <p>Correct Answer : {{ form.correct }}</p>#}
+                {{ form|crispy }}
+                <div class="mb-4">
+                    <hr>
+                </div>
+            {% endfor %}
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+

@@ -1,0 +1,65 @@
+from django.db import models
+
+
+class Quiz(models.Model):
+    title = models.CharField(max_length=50)
+    author = models.ForeignKey('users.Teacher', on_delete=models.CASCADE)
+    subject = models.ForeignKey('users.Subject', on_delete=models.CASCADE)
+    batches = models.ManyToManyField('users.Batch')
+
+    class Meta:
+        verbose_name_plural = 'Quizzes'
+
+    def __str__(self):
+        return f"Quiz on {self.title}"
+
+
+class Question(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    question = models.TextField()
+    option_a = models.TextField()
+    option_b = models.TextField()
+    option_c = models.TextField()
+    option_d = models.TextField()
+
+    options = [
+        ('A', 'A'),
+        ('B', 'B'),
+        ('C', 'C'),
+        ('D', 'D')
+    ]
+    correct_ans = models.CharField(max_length=10, choices=options, help_text="Which is the correct answer")
+
+    def __str__(self):
+        return f"{self.quiz.title.upper() + ' Question'}"
+
+
+class QuestionResponse(models.Model):
+    student = models.OneToOneField('users.Student', on_delete=models.CASCADE)
+    question = models.OneToOneField(Question, on_delete=models.CASCADE)
+    options = [
+        ('A', 'A'),
+        ('B', 'B'),
+        ('C', 'C'),
+        ('D', 'D')
+    ]
+
+    que_response = models.CharField(max_length=10, choices=options, help_text="Response entered by the student")
+
+    def __str__(self):
+        return f"Response to {self.question.quiz.title.upper()} + Question - {self.question.text}"
+
+
+class QuizResponse(models.Model):
+    student = models.OneToOneField('users.Student', on_delete=models.CASCADE)
+    quiz = models.OneToOneField(Quiz, on_delete=models.CASCADE)
+    responses = models.ForeignKey(QuestionResponse, on_delete=models.CASCADE)
+    score = 0
+
+    def __str__(self):
+        return f"{self.quiz.title.upper() + ' Question'}"
+
+    def get_result(self):
+        if self.responses.question.answer_set[0] == self.responses.answer:
+            self.score += 1
+        return self.score

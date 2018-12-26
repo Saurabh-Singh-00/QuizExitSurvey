@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect, HttpResponse
 from django.views.generic import CreateView
 
-from .forms import StudentRegisterForm
+from .forms import StudentRegisterForm, TeacherRegisterForm
 from users.models import User
 
 
@@ -18,7 +18,17 @@ class RegisterStudentView(CreateView):
         kwargs['user_type'] = 'student'
         return super().get_context_data(**kwargs)
 
-#
+
+class RegisterTeacherView(CreateView):
+    model = User
+    form_class = TeacherRegisterForm
+    template_name = 'users/register.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['user_type'] = 'teacher'
+        return super().get_context_data(**kwargs)
+
+
 # def register_student(request):
 #     if request.method == 'POST':
 #         form = TeacherRegisterForm(request.POST)

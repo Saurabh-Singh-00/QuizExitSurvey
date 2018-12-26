@@ -30,6 +30,18 @@ class TeacherRegisterForm(UserCreationForm):
             raise ValidationError("Last name is required.")
         return self.cleaned_data["last_name"]
 
+    @transaction.atomic
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_teacher = True
+        if commit:
+            user.save()
+            teacher = Teacher.objects.create(teacher=user)
+            teacher.batches.set(self.cleaned_data.get('batches'))
+            teacher.subjects.set(self.cleaned_data.get('subjects'))
+        return user
+
+
 
 class StudentRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)

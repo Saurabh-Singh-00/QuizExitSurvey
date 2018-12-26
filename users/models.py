@@ -12,7 +12,7 @@ class User(AbstractUser):
 
 class Student(models.Model):
     student = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    batch = models.ForeignKey('users.Batch', on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.student.username.capitalize()}"
@@ -35,18 +35,19 @@ class Teacher(models.Model):
         return f"Prof {self.teacher.username.capitalize()}"
 
 
-@receiver(post_save, sender=User)
-def update_user_profile(sender, instance, created, **kwargs):
-    if created:
-        try:
-            Teacher.objects.create(teacher=instance)
-            instance.teacher.save()
-        except:
-            pass
+# @receiver(post_save, sender=User)
+# def update_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#
+#         try:
+#             if instance.is_teacher:
+#                 Teacher.objects.create(teacher=instance)
+#                 instance.teacher.save()
+#         except:
+#             pass
 
 
 class Batch(models.Model):
-    students = models.ManyToManyField(Student)
     subjects = models.ManyToManyField(Subject)
 
     YEAR_CHOICES = (

@@ -35,14 +35,15 @@ class Teacher(models.Model):
         return f"Prof {self.teacher.username.capitalize()}"
 
 
-@receiver(post_save, sender=User)
-def update_user_profile(sender, instance, created, **kwargs):
-    if created:
-        try:
-            Teacher.objects.create(teacher=instance)
-            instance.teacher.save()
-        except:
-            pass
+# @receiver(post_save, sender=User)
+# def update_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         try:
+#             if sender.is_teacher:
+#                 Teacher.objects.create(teacher=instance)
+#                 instance.teacher.save()
+#         except:
+#             pass
 
 
 class Batch(models.Model):

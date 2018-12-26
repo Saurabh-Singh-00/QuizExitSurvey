@@ -1,9 +1,9 @@
 from django import forms
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
+from django.db import transaction
 
-from .models import Subject, Batch
+from .models import Subject, Batch, User, Teacher
 
 
 class TeacherRegisterForm(UserCreationForm):
@@ -26,3 +26,15 @@ class TeacherRegisterForm(UserCreationForm):
         if self.cleaned_data["last_name"].strip() == '':
             raise ValidationError("Last name is required.")
         return self.cleaned_data["last_name"]
+
+    @transaction.atomic
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_teacher = True
+        print("+++++++++++++++++++++++ afaagadgdag +++++++++++++++++++++++++")
+        user.save()
+        teacher = Teacher.objects.create(teacher=user)
+        print("+++++++++++++++++++++++ fsdgsdgsdg +++++++++++++++++++++++++")
+        teacher.subjects.add(*self.cleaned_data.get('subjects'))
+        teacher.batches.add(*self.cleaned_data.get('batches'))
+        return user

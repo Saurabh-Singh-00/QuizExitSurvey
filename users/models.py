@@ -12,7 +12,7 @@ class User(AbstractUser):
 
 class Student(models.Model):
     student = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    batch = models.ForeignKey('users.Batch', on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.student.username.capitalize()}"
@@ -36,7 +36,6 @@ class Teacher(models.Model):
 
 
 class Batch(models.Model):
-    students = models.ManyToManyField(Student)
     subjects = models.ManyToManyField(Subject)
 
     YEAR_CHOICES = (

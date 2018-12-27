@@ -2,6 +2,13 @@
 {% load crispy_forms_tags %}
 {% block content %}
     <div class="content-section col-md-8 col-sm-12 offset-md-2 mt-3 mb-3">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">
+                    <strong>Success!</strong> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
         <form method="post">
             {% csrf_token %}
             <fieldset class="form-group">
@@ -14,7 +21,8 @@
         </form>
         <div class="border-top pt-3">
             <small class="text-muted">
-                No Account yet ? <a class="ml-2" href='{% url 'register' %}'>Register</a>
+                No Account yet ? <a class="ml-2 mr-2" href='{% url 'register-teacher' %}'>Register as a Teacher</a> OR
+                <a class="ml-2 mr-2" href='{% url 'register-student' %}'>Register as a Student</a>
             </small>
         </div>
     </div>

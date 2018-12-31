@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                {% if subjects %}
+                    <legend class="mt-4 mb-2">
+                        Subjects
+                    </legend>
+                    {% for subject in subjects %}
+                        {{ subject }}
+                        <hr>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

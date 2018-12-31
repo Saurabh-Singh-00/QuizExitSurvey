@@ -119,3 +119,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Added Auth for Abstract User
 AUTH_USER_MODEL = "users.User"
+
+# Login URL
+LOGIN_URL = 'login'
+
+# MESSAGE STORAGE
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'

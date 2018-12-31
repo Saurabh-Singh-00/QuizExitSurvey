@@ -5,8 +5,9 @@ from django.shortcuts import _get_queryset
 from .models import User, Teacher, Student
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
+from django.db import transaction
 
-from .models import Subject, Batch
+from .models import Subject, Batch, User, Teacher
 
 
 class TeacherRegisterForm(UserCreationForm):

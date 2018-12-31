@@ -24,7 +24,7 @@
     {% endif %}
 </head>
 <style>
-    body{
+    body {
         font-family: 'Roboto Slab', serif;
     }
 </style>
@@ -46,6 +46,27 @@
                 <a class="nav-link disabled" href="#">About Us</a>
             </li>
         </ul>
+    </div>
+
+    <div class="collapse navbar-collapse text-white" id="navbarText">
+        {% if user.is_authenticated %}
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    {% if user.is_teacher %}
+                        <a href="{% url 'teacher-home' user.pk %}" class="nav-link">
+                            Professor: {{ user.first_name }}
+                        </a>
+                        {% else %}
+                        <a href="{% url 'student-home' user.pk %}" class="nav-link">
+                            Student: {{ user.first_name }}
+                        </a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                </li>
+            </ul>
+        {% endif %}
     </div>
 </nav>
 

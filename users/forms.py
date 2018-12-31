@@ -42,7 +42,6 @@ class TeacherRegisterForm(UserCreationForm):
         return user
 
 
-
 class StudentRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
     batch = forms.ModelChoiceField(queryset=Batch.objects.all(), required=True, )

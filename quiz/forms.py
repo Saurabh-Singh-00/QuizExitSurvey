@@ -4,7 +4,10 @@ from users.models import Teacher, Batch, Subject
 
 
 class QuestionForm(forms.Form):
-    question = forms.CharField(max_length=500, widget=forms.Textarea)
+    question = forms.CharField(max_length=500, widget=forms.Textarea(attrs={
+        'class': 'form-control',
+        'placeholder': 'Enter question here.'
+    }))
     option_a = forms.CharField(max_length=100)
     option_b = forms.CharField(max_length=100)
     option_c = forms.CharField(max_length=100)
@@ -18,7 +21,7 @@ class QuestionForm(forms.Form):
     correct_ans = forms.ChoiceField(choices=options)
 
 
-QuestionFormSet = forms.formset_factory(QuestionForm, extra=3)
+QuestionFormSet = forms.formset_factory(QuestionForm, extra=1)
 
 
 class QuizForm(forms.ModelForm):

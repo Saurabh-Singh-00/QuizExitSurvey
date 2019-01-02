@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.utils.decorators import method_decorator
@@ -8,7 +9,7 @@ from .models import Quiz, Question, QuizResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import AccessMixin
 from .forms import QuestionFormSet, QuizForm, TakeQuizForm
-from users.models import Teacher
+from users.models import Teacher, Subject, Batch
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -59,7 +60,7 @@ def create_quiz(request, pk):
     heading_message = 'Formset Demo'
     quiz = get_object_or_404(Quiz, pk=pk)
     if request.method == 'GET':
-        formset = QuestionFormSet(request.GET or None,  )
+        formset = QuestionFormSet(request.GET or None, )
     elif request.method == 'POST':
         formset = QuestionFormSet(request.POST)
         if formset.is_valid():
@@ -83,17 +84,20 @@ def create_quiz(request, pk):
     })
 
 
-@method_decorator([login_required, teacher_required],  name='dispatch')
-class QuizCreateView(CreateView):
-    model = Quiz
-    form_class = QuizForm
+def add_quiz(request):
     template_name = 'quiz/add_quiz.html'
+    teacher = request.user.teacher
+    if request.method == 'POST':
+        form = QuizForm(teacher, request.POST)
+        if form.is_valid():
+            quiz = form.save(commit=False)
+            quiz.title = form.cleaned_data['title']
+            quiz.author = teacher
+            quiz.subject = form.cleaned_data['subject']
+            quiz.save()
+            form.save_m2m()
+            return redirect('create-quiz', pk=quiz.pk)
+    else:
+        form = QuizForm(teacher)
 
-    def form_valid(self, form):
-        if self.request.user.is_teacher:
-            obj = form.save(commit=False)
-            obj.author = self.request.user.teacher
-            obj.save()
-            return redirect('create-quiz', pk=obj.pk)
-        else:
-            return HttpResponse("<h1>You are not supposed to be here!</h1>")
+    return render(request, template_name, {'form': form})

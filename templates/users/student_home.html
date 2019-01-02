@@ -1,13 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="container">
-        {% if subjects %}
+        {% if quizzes %}
             <legend class="mt-4 mb-2">
-                Subjects
+                Quizzes
             </legend>
-            {% for subject in subjects %}
-                {{ subject }}
-                <hr>
+            <hr>
+            {% for subject in view.get_subject_list %}
+                <h4>{{ subject }}</h4>
+                {% for quiz in quizzes %}
+                    {% if subject == quiz.subject.name %}
+                    <a href='{% url 'attempt-quiz' quiz.pk %}'>  {{ quiz.title }} </a>
+                    <hr>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
         {% endif %}
     </div>

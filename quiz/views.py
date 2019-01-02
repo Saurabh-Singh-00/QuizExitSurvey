@@ -1,35 +1,65 @@
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
-from .models import Quiz, Question, QuizResponse, QuestionResponse
+from django.utils.decorators import method_decorator
+from Quizzes_Surveys.decorators import teacher_required, student_required
+from .models import Quiz, Question, QuizResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import AccessMixin
-from .forms import QuestionFormSet, QuizForm
+from .forms import QuestionFormSet, QuizForm, TakeQuizForm
 from users.models import Teacher
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # Create your views Question
 
-class QuizListView(ListView):
-    model = Quiz
-    template_name = 'quiz/home.html'
-    context_object_name = 'quizzes'
-
-
-def question_list(request, pk):
+@login_required
+@student_required
+def attempt_quiz(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
-    context = {
-        'questions': Question.objects.filter(quiz=quiz)
+    questions = Question.objects.filter(quiz=quiz)
+    student = request.user.student
 
-    }
-    return render(request, 'quiz/show_quiz.html', context)
+    if QuizResponse.objects.filter(quiz=quiz) == QuizResponse.objects.filter(student=student):
+        return render(request, 'users/student_home.html')
+
+    total_questions = questions.__len__()
+
+    if request.method == 'POST':
+        form = TakeQuizForm(data=request.POST, quiz=quiz)
+        # if form.is_valid():
+        #     with transaction.atomic():
+        #         student_answer = form.save(commit=False)
+        #         student_answer.student = student
+        #         student_answer.save()
+        #         for question in questions:
+        #             student.
+        #         # if student.get_unanswered_questions(quiz).exists():
+        #         #     return redirect('students:take_quiz', pk)
+        #         # else:
+        #         #     correct_answers = student.quiz_answers.filter(answer__question__quiz=quiz, answer__is_correct=True).count()
+        #         #     score = round((correct_answers / total_questions) * 100.0, 2)
+        #         #     QuizResponse.objects.create(student=student, quiz=quiz, score=score)
+        #         #     if score < 50.0:
+        #         #         messages.warning(request, 'Better luck next time! Your score for the quiz %s was %s.' % (quiz.name, score))
+        #         #     else:
+        #         #         messages.success(request, 'Congratulations! You completed the quiz %s with success! You scored %s points.' % (quiz.name, score))
+        #         #     return redirect('students:quiz_list')
+    else:
+        form = TakeQuizForm(quiz=quiz)
+
+    return render(request, 'quiz/attempt.html', {'form': form})
 
 
+@teacher_required
+@login_required
 def create_quiz(request, pk):
     template_name = 'quiz/show_quiz.html'
     heading_message = 'Formset Demo'
     quiz = get_object_or_404(Quiz, pk=pk)
     if request.method == 'GET':
-        formset = QuestionFormSet(request.GET or None)
+        formset = QuestionFormSet(request.GET or None,  )
     elif request.method == 'POST':
         formset = QuestionFormSet(request.POST)
         if formset.is_valid():
@@ -46,36 +76,24 @@ def create_quiz(request, pk):
                     Question(question=text, quiz=quiz, option_a=a, option_b=b, option_c=c, option_d=d,
                              correct_ans=ans).save()
             # once all books are saved, redirect to book list view
-            response = HttpResponse()
-            response.write("<p>Congratulations</p>")
-            return HttpResponse(request, response)
+            return HttpResponse("<html><body>Created</body></html>")
     return render(request, template_name, {
         'formset': formset,
         'heading': heading_message,
     })
 
 
-# def add_quiz(request):
-#     if request.method == 'GET':
-#         return render(request, 'quiz/add_quiz.html', {'form': QuizForm})
-#     elif request.method == 'POST':
-#         form = QuizForm(request.POST)
-#         if form.is_valid():
-#             text = form.cleaned_data.get('text')
-#             if text:
-#                 teacher = Teacher.objects.first()
-#
-#                 Quiz(title=text, author=teacher).save()
-#                 quiz = Quiz.objects.latest('id')
-#                 return redirect('create-quiz', pk=quiz.pk)
-
-
+@method_decorator([login_required, teacher_required],  name='dispatch')
 class QuizCreateView(CreateView):
     model = Quiz
     form_class = QuizForm
     template_name = 'quiz/add_quiz.html'
 
     def form_valid(self, form):
-        _form = form.save()
-        # TODO: Setup success url after creating a Quiz
-        return HttpResponse("<h1>Quiz Added<h1>")
+        if self.request.user.is_teacher:
+            obj = form.save(commit=False)
+            obj.author = self.request.user.teacher
+            obj.save()
+            return redirect('create-quiz', pk=obj.pk)
+        else:
+            return HttpResponse("<h1>You are not supposed to be here!</h1>")

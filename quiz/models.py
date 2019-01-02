@@ -1,4 +1,5 @@
 from django.db import models
+from django.shortcuts import reverse
 
 
 class Quiz(models.Model):
@@ -11,7 +12,10 @@ class Quiz(models.Model):
         verbose_name_plural = 'Quizzes'
 
     def __str__(self):
-        return f"Quiz on {self.title}"
+        return f"{self.title}"
+
+    def get_absolute_url(self):
+        return reverse('create-quiz', kwargs={'pk': self.pk})
 
 
 class Question(models.Model):
@@ -47,7 +51,7 @@ class QuestionResponse(models.Model):
     que_response = models.CharField(max_length=10, choices=options, help_text="Response entered by the student")
 
     def __str__(self):
-        return f"Response to {self.question.quiz.title.upper()} + Question - {self.question.text}"
+        return f"Response to {self.question.quiz.title.upper()} + Question - {self.question.question}"
 
 
 class QuizResponse(models.Model):

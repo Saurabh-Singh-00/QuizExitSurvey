@@ -1,14 +1,18 @@
 # Create your views here.
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views.generic import CreateView
 from django.views.generic import ListView
-from django.views.generic.base import View
+from django.views.generic.base import View, ContextMixin
 
+from Quizzes_Surveys.decorators import student_required, teacher_required
+from quiz.models import Quiz
 from users.models import User, Student, Subject, Teacher, Batch
 from .forms import StudentRegisterForm, TeacherRegisterForm
 
@@ -43,16 +47,28 @@ class RegisterTeacherView(SuccessMessageMixin, CreateView):
         return super().get_context_data(**kwargs)
 
 
-class StudentSubjectListView(LoginRequiredMixin, ListView):
+@method_decorator([login_required, student_required], name='dispatch')
+class StudentSubjectListView(ListView, ContextMixin):
     template_name = 'users/student_home.html'
-    context_object_name = 'subjects'
+    context_object_name = 'quizzes'
 
     def get_queryset(self):
         self.user = get_object_or_404(User, pk=self.kwargs['pk'])
-        return Subject.objects.filter(batch__year=self.user.student.batch.year)
+        quiz_set = Quiz.objects.filter(batches__student=self.user.student).order_by('subject__name')
+        return quiz_set
+
+    def get_subject_list(self):
+        subject_list = []
+        for quiz in Quiz.objects.filter(batches__student=self.user.student).order_by('subject__name'):
+            subject = quiz.subject.name
+            if subject not in subject_list:
+                subject_list.append(subject)
+        subject_list.sort()
+        return subject_list
 
 
-class TeacherSubjectListView(LoginRequiredMixin, ListView):
+@method_decorator([login_required, teacher_required], name='dispatch')
+class TeacherSubjectListView(ListView):
     template_name = 'users/teacher_home.html'
     context_object_name = 'subjects'
 

@@ -48,8 +48,8 @@ class RegisterTeacherView(SuccessMessageMixin, CreateView):
 
 
 @method_decorator([login_required, student_required], name='dispatch')
-class StudentSubjectListView(ListView, ContextMixin):
-    template_name = 'users/student_home.html'
+class StudentQuizListView(ListView, ContextMixin):
+    template_name = 'users/quiz_list.html'
     context_object_name = 'quizzes'
 
     def get_queryset(self):
@@ -69,14 +69,25 @@ class StudentSubjectListView(ListView, ContextMixin):
 
 @method_decorator([login_required, teacher_required], name='dispatch')
 class TeacherSubjectListView(ListView):
-    template_name = 'users/teacher_home.html'
-    context_object_name = 'subjects'
+    template_name = 'users/quiz_list.html'
+    context_object_name = 'quizzes'
 
     def get_queryset(self):
         self.user = get_object_or_404(User, pk=self.kwargs['pk'])
-        print(Subject.objects.all())
-        print(self.user.teacher.subjects.all())
-        return Subject.objects.all() and self.user.teacher.subjects.all()
+        subjects = self.user.teacher.subjects.all()
+        quiz_set = Quiz.objects.filter(subject__in=subjects).order_by('subject__name')
+        return quiz_set
+
+    def get_subject_list(self):
+        subject_list = []
+        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
+        subjects = self.user.teacher.subjects.all()
+        for quiz in Quiz.objects.filter(subject__in=subjects).order_by('subject__name'):
+            subject = quiz.subject.name
+            if subject not in subject_list:
+                subject_list.append(subject)
+        subject_list.sort()
+        return subject_list
 
 
 class LoginView(View):

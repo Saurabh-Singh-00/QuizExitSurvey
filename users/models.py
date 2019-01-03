@@ -32,7 +32,7 @@ class Teacher(models.Model):
     batches = models.ManyToManyField('users.Batch')
 
     def __str__(self):
-        return f"Prof {self.teacher.username.capitalize()}"
+        return f"Prof {self.teacher.first_name.capitalize() + self.teacher.first_name.capitalize()}"
 
 
 class Batch(models.Model):

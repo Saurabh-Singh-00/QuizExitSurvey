@@ -2,7 +2,7 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -48,7 +48,7 @@ class RegisterTeacherView(SuccessMessageMixin, CreateView):
 
 
 @method_decorator([login_required, student_required], name='dispatch')
-class StudentQuizListView(ListView, ContextMixin):
+class StudentQuizListView(UserPassesTestMixin, ListView, ContextMixin):
     template_name = 'users/quiz_list.html'
     context_object_name = 'quizzes'
 
@@ -66,9 +66,12 @@ class StudentQuizListView(ListView, ContextMixin):
         subject_list.sort()
         return subject_list
 
+    def test_func(self):
+        return self.kwargs['pk'] == self.request.user.pk
+
 
 @method_decorator([login_required, teacher_required], name='dispatch')
-class TeacherSubjectListView(ListView):
+class TeacherSubjectListView(UserPassesTestMixin, ListView):
     template_name = 'users/quiz_list.html'
     context_object_name = 'quizzes'
 
@@ -89,10 +92,18 @@ class TeacherSubjectListView(ListView):
         subject_list.sort()
         return subject_list
 
+    def test_func(self):
+        return self.kwargs['pk'] == self.request.user.pk
+
 
 class LoginView(View):
 
     def get(self, request):
+        if self.request.user.is_authenticated:
+            if self.request.user.is_teacher:
+                return redirect('teacher-home', pk=self.request.user.pk)
+            else:
+                return redirect('student-home', pk=self.request.user.pk)
         return render(request, 'users/login.html', {'form': AuthenticationForm()})
 
     def post(self, request):

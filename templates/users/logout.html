@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container col-sm-12 col-md-12">
-        <h3>You have been logged out.</h3>
-        <a href="{% url 'login' %}">Login Again!</a>
+    <div class="container">
+        <div class="col-sm-12 col-md-12 mt-auto mb-auto">
+            <h3>You have been logged out.</h3>
+            <a href="{% url 'login' %}">Login Again!</a>
+        </div>
     </div>
 {% endblock content %}

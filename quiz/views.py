@@ -3,6 +3,7 @@ from django.db import transaction
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from Quizzes_Surveys.decorators import teacher_required, student_required
 from .models import Quiz, Question, QuizResponse
@@ -68,7 +69,7 @@ def add_quiz(request, pk=None):
                 quiz.subject = form.cleaned_data['subject']
                 quiz.save()
                 form.save_m2m()
-                return redirect('edit-quiz', pk=quiz.pk)
+                return redirect('edit-quiz', opk=0, npk=quiz.pk)
         else:
             form = QuizForm(teacher)
     else:
@@ -82,11 +83,7 @@ def add_quiz(request, pk=None):
                 new_quiz.subject = form.cleaned_data['subject']
                 new_quiz.save()
                 form.save_m2m()
-                for question in Question.objects.filter(quiz=quiz):
-                    Question.objects.create(quiz=new_quiz, question=question.question, option_a=question.option_a,
-                                            option_b=question.option_b, option_c=question.option_c,
-                                            option_d=question.option_d, correct_ans=question.correct_ans)
-                return redirect('edit-quiz', pk=new_quiz.pk)
+                return redirect('edit-quiz', opk=quiz.pk, npk=new_quiz.pk)
         else:
             form = QuizForm(teacher, hide_condition=True, initial={'subject': quiz.subject})
 
@@ -95,10 +92,14 @@ def add_quiz(request, pk=None):
 
 @teacher_required
 @login_required
-def edit_quiz(request, pk):
+def edit_quiz(request, opk, npk):
     template_name = 'quiz/edit_quiz.html'
-    quiz = get_object_or_404(Quiz, pk=pk)
-    questions = Question.objects.filter(quiz=quiz).values()
+    quiz = get_object_or_404(Quiz, pk=npk)
+    try:
+        o_quiz = Quiz.objects.filter(pk=opk)
+        questions = Question.objects.filter(quiz=o_quiz[0]).values()
+    except IndexError:
+        questions = {}
     if request.method == 'GET':
         formset = QuestionFormSet(request.GET or None, initial=questions)
     elif request.method == 'POST':
@@ -106,12 +107,12 @@ def edit_quiz(request, pk):
         if formset.is_valid():
             for form in formset:
                 # extract name from each form and save
-                text = form.cleaned_data.get('question')
-                a = form.cleaned_data.get('option_a')
-                b = form.cleaned_data.get('option_b')
-                c = form.cleaned_data.get('option_c')
-                d = form.cleaned_data.get('option_d')
-                ans = form.cleaned_data.get('correct_ans')
+                text = form.cleaned_data['question']
+                a = form.cleaned_data['option_a']
+                b = form.cleaned_data['option_b']
+                c = form.cleaned_data['option_c']
+                d = form.cleaned_data['option_d']
+                ans = form.cleaned_data['correct_ans']
                 # save book instance
                 if text:
                     Question(question=text, quiz=quiz, option_a=a, option_b=b, option_c=c, option_d=d,
@@ -127,8 +128,28 @@ def view_quiz(request, pk):
     # curr_teacher = request.user.teacher
     quiz = get_object_or_404(Quiz, pk=pk)
     questions = Question.objects.filter(quiz=quiz)
+    user = request.user.teacher
     context = {
         'questions': questions,
-        'quiz': quiz
+        'quiz': quiz,
+        'user': user
     }
     return render(request, 'quiz/view_quiz.html', context)
+
+
+class QuizDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Quiz
+    template_name = 'quiz/quiz_confirm_delete.html'
+
+    def test_func(self):
+        quiz = self.get_object()
+        print(quiz)
+        print(self.request.user.teacher)
+        print(quiz.author)
+        if self.request.user.teacher == quiz.author:
+            return True
+        else:
+            return False
+
+    def get_success_url(self):
+        return reverse_lazy('teacher-home', kwargs={'pk': self.request.user.pk})

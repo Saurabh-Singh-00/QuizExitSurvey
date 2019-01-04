@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
     {% for question in questions %}
-        <p>Question:  {{ question.question }}</p>
-        <p>A:  {{ question.option_a }}</p>
-        <p>B:  {{ question.option_b }}</p>
-        <p>C:  {{ question.option_c }}</p>
-        <p>D:  {{ question.option_d }}</p>
-        <p>Correct Ans:  {{ question.correct_ans }}</p>
+        <p>Question: {{ question.question }}</p>
+        <p>A: {{ question.option_a }}</p>
+        <p>B: {{ question.option_b }}</p>
+        <p>C: {{ question.option_c }}</p>
+        <p>D: {{ question.option_d }}</p>
+        <p>Correct Ans: {{ question.correct_ans }}</p>
     {% endfor %}
     <a class="article-title" href="{% url 'add-quiz' quiz.pk %}">Reassign this quiz?</a><br>
+    {% if quiz.author == user %}
+        <a class="article-title" href="{% url 'edit-quiz' quiz.pk quiz.pk %}">Update this quiz?</a><br>
+        <a class="article-title" href="{% url 'delete-quiz' quiz.pk %}">Delete this quiz?</a><br>
+    {% endif %}
 {% endblock %}

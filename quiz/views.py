@@ -105,6 +105,8 @@ def edit_quiz(request, opk, npk):
     elif request.method == 'POST':
         formset = QuestionFormSet(request.POST, initial=questions)
         if formset.is_valid():
+            if opk != 0:
+                Question.objects.filter(quiz=Quiz.objects.filter(pk=opk).first()).delete()
             for form in formset:
                 # extract name from each form and save
                 text = form.cleaned_data['question']
@@ -112,7 +114,7 @@ def edit_quiz(request, opk, npk):
                 b = form.cleaned_data['option_b']
                 c = form.cleaned_data['option_c']
                 d = form.cleaned_data['option_d']
-                ans = form.cleaned_data['correct_ans']
+                ans = form.cleaned_data['correct_answer']
                 # save book instance
                 if text:
                     Question(question=text, quiz=quiz, option_a=a, option_b=b, option_c=c, option_d=d,

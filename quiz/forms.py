@@ -18,7 +18,7 @@ class QuestionForm(forms.Form):
         ("C", "C"),
         ("D", "D"),
     ]
-    correct_ans = forms.ChoiceField(choices=options)
+    correct_answer = forms.ChoiceField(choices=options)
 
 
 QuestionFormSet = forms.formset_factory(QuestionForm, min_num=1, extra=0)

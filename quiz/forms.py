@@ -46,7 +46,11 @@ class QuizForm(forms.ModelForm):
                                                             required=True)
 
 
-class TakeQuizForm(forms.Form):
+class TakeQuizForm(forms.ModelForm):
+    class Meta:
+        model = QuizResponse
+        exclude = ['student', 'responses', 'quiz']
+
     def __init__(self, quiz, *args, **kwargs):
         super(TakeQuizForm, self).__init__(*args, **kwargs)
         questions = Question.objects.filter(quiz=quiz)

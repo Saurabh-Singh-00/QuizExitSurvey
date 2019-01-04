@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% for response in ques_responses %}
+    <p>Question: {{ response.question.question }}</p>
+        <p>A: {{ response.question.option_a }}</p>
+        <p>B: {{ response.question.option_b }}</p>
+        <p>C: {{ response.question.option_c }}</p>
+        <p>D: {{ response.question.option_d }}</p>
+        <p>Correct Ans: {{ response.question.correct_ans }}</p>
+        <p>Your answer: {{ response.que_response.capitalize }}</p>
+    {% endfor %}
+{% endblock %}

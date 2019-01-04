@@ -39,7 +39,7 @@ class Question(models.Model):
 
 
 class QuestionResponse(models.Model):
-    student = models.OneToOneField('users.Student', on_delete=models.CASCADE)
+    quiz_response = models.ForeignKey('quiz.QuizResponse', on_delete=models.CASCADE)
     question = models.OneToOneField(Question, on_delete=models.CASCADE)
     options = [
         ('A', 'A'),
@@ -55,9 +55,8 @@ class QuestionResponse(models.Model):
 
 
 class QuizResponse(models.Model):
-    student = models.OneToOneField('users.Student', on_delete=models.CASCADE)
-    quiz = models.OneToOneField(Quiz, on_delete=models.CASCADE)
-    responses = models.ForeignKey(QuestionResponse, on_delete=models.CASCADE)
+    student = models.ForeignKey('users.Student', on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     score = 0
 
     def __str__(self):

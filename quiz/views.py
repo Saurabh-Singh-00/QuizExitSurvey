@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect, render_to_resp
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from Quizzes_Surveys.decorators import teacher_required, student_required
-from .models import Quiz, Question, QuizResponse
+from .models import Quiz, Question, QuizResponse, QuestionResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import AccessMixin, UserPassesTestMixin
 from .forms import QuestionFormSet, QuizForm, TakeQuizForm
@@ -24,30 +24,35 @@ def attempt_quiz(request, pk):
     questions = Question.objects.filter(quiz=quiz)
     student = request.user.student
 
-    if QuizResponse.objects.filter(quiz=quiz) == QuizResponse.objects.filter(student=student):
-        return render(request, 'quiz/attempt.html')
+    if QuizResponse.objects.filter(quiz=quiz, student=student).exists():
+        ques_responses = QuestionResponse.objects.filter(quiz_response=QuizResponse.objects.filter(quiz=quiz).first())
+        return render(request, 'quiz/view_response.html', context={'ques_responses': ques_responses})
 
-    total_questions = questions.__len__()
     if request.method == 'POST':
         form = TakeQuizForm(data=request.POST, quiz=quiz)
-        # if form.is_valid():
-        #     with transaction.atomic():
-        #         student_answer = form.save(commit=False)
-        #         student_answer.student = student
-        #         student_answer.save()
-        #         for question in questions:
-        #             student.
-        #         # if student.get_unanswered_questions(quiz).exists():
-        #         #     return redirect('students:take_quiz', pk)
-        #         # else:
-        #         #     correct_answers = student.quiz_answers.filter(answer__question__quiz=quiz, answer__is_correct=True).count()
-        #         #     score = round((correct_answers / total_questions) * 100.0, 2)
-        #         #     QuizResponse.objects.create(student=student, quiz=quiz, score=score)
-        #         #     if score < 50.0:
-        #         #         messages.warning(request, 'Better luck next time! Your score for the quiz %s was %s.' % (quiz.name, score))
-        #         #     else:
-        #         #         messages.success(request, 'Congratulations! You completed the quiz %s with success! You scored %s points.' % (quiz.name, score))
-        #         #     return redirect('students:quiz_list')
+        if form.is_valid():
+            with transaction.atomic():
+                quiz_response = form.save(commit=False)
+                quiz_response.student = student
+                quiz_response.quiz = quiz
+                quiz_response.save()
+                ques_no = 1
+                for question in questions:
+                    QuestionResponse.objects.create(question=question, quiz_response=quiz_response,
+                                                    que_response=form.cleaned_data[
+                                                        'question_no_%d' % ques_no])
+                    ques_no += 1
+                # if student.get_unanswered_questions(quiz).exists():
+                #     return redirect('students:take_quiz', pk)
+                # else:
+                #     correct_answers = student.quiz_answers.filter(answer__question__quiz=quiz, answer__is_correct=True).count()
+                #     score = round((correct_answers / total_questions) * 100.0, 2)
+                #     QuizResponse.objects.create(student=student, quiz=quiz, score=score)
+                #     if score < 50.0:
+                #         messages.warning(request, 'Better luck next time! Your score for the quiz %s was %s.' % (quiz.name, score))
+                #     else:
+                #         messages.success(request, 'Congratulations! You completed the quiz %s with success! You scored %s points.' % (quiz.name, score))
+                #     return redirect('students:quiz_list')
     else:
         form = TakeQuizForm(quiz=quiz)
 

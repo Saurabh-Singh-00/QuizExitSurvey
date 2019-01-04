@@ -120,12 +120,14 @@ def edit_quiz(request, opk, npk):
                     Question(question=text, quiz=quiz, option_a=a, option_b=b, option_c=c, option_d=d,
                              correct_ans=ans).save()
             # once all books are saved, redirect to book list view
-            return HttpResponse("<html><body>Created</body></html>")
+            return redirect('view-quiz', pk=npk)
     return render(request, template_name, {
         'formset': formset,
     })
 
 
+@login_required
+@teacher_required
 def view_quiz(request, pk):
     # curr_teacher = request.user.teacher
     quiz = get_object_or_404(Quiz, pk=pk)
@@ -134,7 +136,7 @@ def view_quiz(request, pk):
     context = {
         'questions': questions,
         'quiz': quiz,
-        'user': user
+        'author': user
     }
     return render(request, 'quiz/view_quiz.html', context)
 
@@ -155,3 +157,18 @@ class QuizDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('teacher-home', kwargs={'pk': self.request.user.pk})
+
+
+@method_decorator([login_required, teacher_required], name='dispatch')
+class QuizUpdateView(LoginRequiredMixin, UpdateView):
+    template_name = 'quiz/add_quiz.html'
+    model = Quiz
+    fields = ['title', 'is_open']
+
+    def __init__(self, *args, **kwargs):
+        super(QuizUpdateView, self).__init__(*args, **kwargs)
+
+    def get_success_url(self):
+        quiz = self.get_object()
+        print(quiz)
+        return reverse_lazy('view-quiz', kwargs={'pk': quiz.pk})

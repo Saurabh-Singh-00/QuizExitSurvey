@@ -31,7 +31,7 @@ class QuizForm(forms.ModelForm):
 
     class Meta:
         model = Quiz
-        fields = ['title', 'batches', 'subject']
+        fields = ['title', 'batches', 'subject', 'is_open']
 
     def __init__(self, user, *args, **kwargs):
         try:

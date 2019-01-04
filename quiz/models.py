@@ -7,6 +7,7 @@ class Quiz(models.Model):
     author = models.ForeignKey('users.Teacher', on_delete=models.CASCADE)
     subject = models.ForeignKey('users.Subject', on_delete=models.CASCADE)
     batches = models.ManyToManyField('users.Batch')
+    is_open = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = 'Quizzes'
@@ -15,7 +16,7 @@ class Quiz(models.Model):
         return f"{self.title}"
 
     def get_absolute_url(self):
-        return reverse('create-quiz', kwargs={'pk': self.pk})
+        return reverse('edit-quiz', kwargs={'opk': self.pk, 'npk': self.pk})
 
 
 class Question(models.Model):

@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 
 from quiz.models import Quiz, Question, QuizResponse
 from users.models import Teacher, Batch, Subject
@@ -58,6 +59,7 @@ class QuizForm(forms.ModelForm):
             if subject not in Subject.objects.filter(batch=batch):
                 self.errors['no_subject'] = 'This subject is not available for Batch: ' + str(batch)
                 return False
+
         return True
 
 

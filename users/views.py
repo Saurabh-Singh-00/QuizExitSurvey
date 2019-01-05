@@ -55,7 +55,6 @@ class StudentQuizListView(UserPassesTestMixin, ListView, ContextMixin):
     def get_queryset(self):
         self.user = get_object_or_404(User, pk=self.kwargs['pk'])
         quiz_set = Quiz.objects.filter(batches__student=self.user.student).order_by('subject__name')
-        print(quiz_set)
         return quiz_set
 
     def get_subject_list(self):

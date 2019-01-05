@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
+    <div class="xyz">
     <form method="post">
         {% csrf_token %}
         <fieldset class="form-group">
             {{ form|crispy }}
         </fieldset>
-        <input class="btn btn-outline-success" type="submit"/>
+        <input class="btn btn-outline-success" type="submit" value="I'm done">
     </form>
+    </div>
 {% endblock %}

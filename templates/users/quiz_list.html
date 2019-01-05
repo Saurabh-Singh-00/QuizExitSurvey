@@ -15,31 +15,27 @@
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 bhoechie-tab">
                     <div class="bhoechie-tab-content active">
-                        {% if quizzes %}
-                            <legend class="mt-4 mb-2">
-                                My Quizzes
-                                <span class="float-right">
-                <a href="{% url 'add-quiz' %}" class="btn btn-info">
-                    Add new Quiz
-                </a>
-            </span>
-                            </legend>
-                            <hr>
-                            {% for subject in view.get_subject_list %}
-                                <h4>{{ subject }}</h4>
-                                {% for quiz in quizzes %}
-                                    {% if quiz.author == user.teacher %}
-                                        {% if subject == quiz.subject.name %}
-                                            {% if user.is_teacher %}
-                                                <a href='{% url 'view-quiz' quiz.pk %}'>  {{ quiz.title }} -
-                                                    Prof {{ quiz.author.teacher.first_name }} {{ quiz.author.teacher.last_name }}  </a>
-                                            {% endif %}
-                                            <hr>
+                        <legend class="mt-4 mb-2">
+                            My Quizzes
+                            <span class="float-right">
+                                    <a href="{% url 'add-quiz' %}" class="btn btn-info">Add new Quiz</a>
+                                </span>
+                        </legend>
+                        <hr>
+                        {% for subject in view.get_subject_list %}
+                            <h4>{{ subject }}</h4>
+                            {% for quiz in quizzes %}
+                                {% if quiz.author == user.teacher %}
+                                    {% if subject == quiz.subject.name %}
+                                        {% if user.is_teacher %}
+                                            <a href='{% url 'view-quiz' quiz.pk %}'>  {{ quiz.title }} -
+                                                Prof. {{ quiz.author.teacher.first_name }} {{ quiz.author.teacher.last_name }}  </a>
                                         {% endif %}
+                                        <hr>
                                     {% endif %}
-                                {% endfor %}
+                                {% endif %}
                             {% endfor %}
-                        {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="bhoechie-tab-content">
                         {% if quizzes %}
@@ -53,7 +49,7 @@
                                     {% if subject == quiz.subject.name %}
                                         {% if user.is_teacher %}
                                             <a href='{% url 'view-quiz' quiz.pk %}'>  {{ quiz.title }} -
-                                                Prof {{ quiz.author.teacher.first_name }} {{ quiz.author.teacher.last_name }}  </a>
+                                                Prof. {{ quiz.author.teacher.first_name }} {{ quiz.author.teacher.last_name }}  </a>
                                         {% endif %}
                                         <hr>
                                     {% endif %}
@@ -67,27 +63,91 @@
     {% elif user.is_authenticated and not user.is_teacher %}
         {% if quizzes %}
             <div class="container mt-2 mb-2">
-                {% if quizzes %}
-                    <legend class="mt-4 mb-2">
-                        All Quizzes
-                    </legend>
-                    <hr>
-                    {% for subject in view.get_subject_list %}
-                        <h4>{{ subject }}</h4>
-                        {% for quiz in quizzes %}
-                            {% if quiz.is_open %}
-                            {% if subject == quiz.subject.name %}
-                                {% if not user.is_teacher %}
-                                    <a href='{% url 'attempt-quiz' quiz.pk %}'>  {{ quiz.title }} -
-                                        Prof {{ quiz.author.teacher.first_name }} {{ quiz.author.teacher.last_name }}</a>
-                                {% endif %}
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 bhoechie-tab-menu">
+                        <div class="list-group">
+                            <a href="#" class="list-group-item active text-center mb-2">
+                                Open Quizzes
+                            </a>
+                            <a href="#" class="list-group-item text-center mb-2">
+                                Closed Quizzes
+                            </a>
+                            <a href="#" class="list-group-item text-center mb-2">
+                                All Quizzes
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 bhoechie-tab">
+                        <div class="bhoechie-tab-content active">
+                            <legend class="mt-4 mb-2">
+                                Open Quizzes
+                            </legend>
+                            <hr>
+                            {% for subject in view.get_subject_list %}
+                                <h4>{{ subject }}</h4>
+                                {% for quiz in quizzes %}
+                                    {% if subject == quiz.subject.name %}
+                                        {% if quiz.is_open %}
+                                            <a href='{% url 'attempt-quiz' quiz.pk %}'>  {{ quiz.title }} -
+                                                Prof. {{ quiz.author.teacher.first_name }} {{ quiz.author.teacher.last_name }}</a>
+                                            <hr>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                        <div class="bhoechie-tab-content">
+                            <legend class="mt-4 mb-2">
+                                Closed Quizzes
+                            </legend>
+                            <hr>
+                            {% for subject in view.get_subject_list %}
+                                <h4>{{ subject }}</h4>
+                                {% for quiz in quizzes %}
+                                    {% if subject == quiz.subject.name %}
+                                        {% if not quiz.is_open %}
+                                            <a href='{% url 'attempt-quiz' quiz.pk %}'>  {{ quiz.title }} -
+                                                Prof. {{ quiz.author.teacher.first_name }} {{ quiz.author.teacher.last_name }}</a>
+                                            <hr>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                        <div class="bhoechie-tab-content">
+                            {% if quizzes %}
+                                <legend class="mt-4 mb-2">
+                                    All Quizzes
+                                </legend>
                                 <hr>
+                                {% for subject in view.get_subject_list %}
+                                    <h4>{{ subject }}</h4>
+                                    {% for quiz in quizzes %}
+                                        {% if subject == quiz.subject.name %}
+                                            <a href='{% url 'attempt-quiz' quiz.pk %}'>  {{ quiz.title }} -
+                                                Prof. {{ quiz.author.teacher.first_name }} {{ quiz.author.teacher.last_name }}</a>
+                                            {% if quiz.is_open %}
+                                                <span class="align-right">
+                                                    Open
+                                                </span>
+                                            {% else %}
+                                                <span class="align-right">
+                                                    Closed
+                                                </span>
+                                            {% endif %}
+                                            <hr>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
                             {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                    {% endfor %}
-                {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
+        {% else %}
+            <legend class="mt-4 mb-2">
+                You haven't been assigned any quizzes yet! Rejoice :)
+            </legend>
         {% endif %}
     {% endif %}
 {% endblock content %}

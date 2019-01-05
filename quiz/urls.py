@@ -14,5 +14,4 @@ urlpatterns = [
     path('<int:opk>/<int:npk>/edit/', views.edit_quiz, name='edit-quiz'),
     path('<int:pk>/delete/', views.QuizDeleteView.as_view(), name='delete-quiz'),
     path('<int:pk>/update/', views.QuizUpdateView.as_view(), name='update-quiz'),
-    path('<int:pk>/status/', views.change_status, name='change-status')
 ]

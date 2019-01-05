@@ -1,14 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django import forms
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.template.loader import get_template
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic.base import View
-
 from Quizzes_Surveys.decorators import teacher_required, student_required
 from Quizzes_Surveys.utils import render_to_pdf
 from .models import Quiz, Question, QuizResponse, QuestionResponse
@@ -34,39 +31,47 @@ def attempt_quiz(request, pk):
         ques_responses = QuestionResponse.objects.filter(quiz_response=quiz_response)
         return redirect('view-response', pk=quiz_response.pk)
 
-    if request.method == 'POST':
-        form = TakeQuizForm(data=request.POST, quiz=quiz)
-        if form.is_valid():
-            with transaction.atomic():
-                quiz_response = form.save(commit=False)
-                quiz_response.student = student
-                quiz_response.quiz = quiz
-                quiz_response.score = 0
-                quiz_response.save()
-                ques_no = 1
-                score = 0
-                for question in questions:
-                    ques_response = QuestionResponse.objects.create(question=question, quiz_response=quiz_response,
-                                                                    que_response=form.cleaned_data[
-                                                                        'question_no_%d' % ques_no])
-                    ques_no += 1
-                    if ques_response.que_response == question.correct_ans.lower():
-                        score += 1
-                quiz_response.score = score
-                quiz_response.save()
-                return redirect('view-response', pk=quiz_response.pk)
+    if quiz.is_open:
+        if request.method == 'POST':
+            form = TakeQuizForm(data=request.POST, quiz=quiz)
+            if form.is_valid():
+                with transaction.atomic():
+                    quiz_response = form.save(commit=False)
+                    quiz_response.student = student
+                    quiz_response.quiz = quiz
+                    quiz_response.score = 0
+                    quiz_response.save()
+                    ques_no = 1
+                    score = 0
+                    for question in questions:
+                        ques_response = QuestionResponse.objects.create(question=question, quiz_response=quiz_response,
+                                                                        que_response=form.cleaned_data[
+                                                                            'question_no_%d' % ques_no])
+                        ques_no += 1
+                        if ques_response.que_response == question.correct_ans.lower():
+                            score += 1
+                    quiz_response.score = score
+                    quiz_response.save()
+                    return redirect('view-response', pk=quiz_response.pk)
 
+        else:
+            form = TakeQuizForm(quiz=quiz)
     else:
-        form = TakeQuizForm(quiz=quiz)
+        return redirect('view-response', pk=0)
 
     return render(request, 'quiz/attempt.html', {'form': form})
 
 
+@login_required
+@student_required
 def view_response(request, pk):
-    quiz_response = get_object_or_404(QuizResponse, pk=pk)
     template = 'quiz/view_response.html'
-    ques_responses = QuestionResponse.objects.filter(quiz_response=quiz_response)
-    context = {'ques_responses': ques_responses, 'quiz_response': quiz_response}
+    if pk != 0:
+        quiz_response = get_object_or_404(QuizResponse, pk=pk)
+        ques_responses = QuestionResponse.objects.filter(quiz_response=quiz_response)
+        context = {'ques_responses': ques_responses, 'quiz_response': quiz_response}
+    else:
+        context = {'quiz_response': False}
 
     return render(request, template, context=context)
 
@@ -93,25 +98,6 @@ def generate_pdf(request, pk):
 
 @teacher_required
 @login_required
-def change_status(request, pk):
-    # status = request.GET.get('status', None)
-    print("Change status called")
-    quiz = get_object_or_404(Quiz, pk=pk)
-    if quiz.is_open:
-        quiz.is_open = False
-        html = '<a id="status" class="btn btn-success" href=""> Quiz Status: Open </a>'
-    else:
-        quiz.is_open = True
-        html = '<a class="btn btn-secondary" href=""> Quiz Status: Closed </a>'
-    quiz.save()
-    data = {
-        'html': html
-    }
-    return JsonResponse(data)
-
-
-@teacher_required
-@login_required
 def add_quiz(request, pk=None):
     template_name = 'quiz/add_quiz.html'
     teacher = request.user.teacher
@@ -127,7 +113,6 @@ def add_quiz(request, pk=None):
                 form.save_m2m()
                 return redirect('edit-quiz', opk=0, npk=quiz.pk)
             else:
-                print(form.errors['no_subject'])
                 messages.error(request, form.errors['no_subject'])
         else:
             form = QuizForm(teacher)
@@ -143,6 +128,8 @@ def add_quiz(request, pk=None):
                 new_quiz.save()
                 form.save_m2m()
                 return redirect('edit-quiz', opk=quiz.pk, npk=new_quiz.pk)
+            else:
+                messages.error(request, "Please select a batch")
         else:
             form = QuizForm(teacher, hide_condition=True, initial={'subject': quiz.subject})
 
@@ -159,12 +146,13 @@ def edit_quiz(request, opk, npk):
         questions = Question.objects.filter(quiz=o_quiz[0]).values()
     except IndexError:
         questions = {}
+
     if request.method == 'GET':
         formset = QuestionFormSet(request.GET or None, initial=questions)
     elif request.method == 'POST':
         formset = QuestionFormSet(request.POST, initial=questions)
         if formset.is_valid():
-            if opk != 0:
+            if opk == npk:
                 Question.objects.filter(quiz=Quiz.objects.filter(pk=opk).first()).delete()
             for form in formset:
                 # extract name from each form and save
@@ -188,27 +176,26 @@ def edit_quiz(request, opk, npk):
 @login_required
 @teacher_required
 def view_quiz(request, pk):
-    # curr_teacher = request.user.teacher
     quiz = get_object_or_404(Quiz, pk=pk)
     questions = Question.objects.filter(quiz=quiz)
+    responses = QuizResponse.objects.filter(quiz=quiz).exists()
     user = request.user.teacher
     context = {
         'questions': questions,
         'quiz': quiz,
-        'author': user
+        'author': user,
+        'responses': responses
     }
     return render(request, 'quiz/view_quiz.html', context)
 
 
-class QuizDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+@method_decorator([login_required, teacher_required], name='dispatch')
+class QuizDeleteView(UserPassesTestMixin, DeleteView):
     model = Quiz
     template_name = 'quiz/quiz_confirm_delete.html'
 
     def test_func(self):
         quiz = self.get_object()
-        print(quiz)
-        print(self.request.user.teacher)
-        print(quiz.author)
         if self.request.user.teacher == quiz.author:
             return True
         else:
@@ -219,7 +206,7 @@ class QuizDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 @method_decorator([login_required, teacher_required], name='dispatch')
-class QuizUpdateView(LoginRequiredMixin, UpdateView):
+class QuizUpdateView(UpdateView):
     template_name = 'quiz/add_quiz.html'
     model = Quiz
     fields = ['title', 'is_open']

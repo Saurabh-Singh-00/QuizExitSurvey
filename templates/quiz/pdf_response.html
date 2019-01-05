@@ -8,27 +8,53 @@
             src: url('//Users//vedan//PycharmProjects//QuizExitSurvey//templates//quiz//ldfinescript4.ttf');
             font-weight: bold;
             font-style: italic;
-            font-size: xx-large;
+            font-size: 200%;
         }
 
-        div{
+        div.a {
             text-align-all: center;
+            text-align: center;
+            display: table;
+            margin-right: auto;
+            margin-left: auto;
         }
+
+
+        div.b {
+            font-size: 180%;
+        }
+
+        div.c{
+            font-size: 150%;
+        }
+
     </style>
 </head>
 <body>
 {% block content %}
-    <p>Your Score: {{ quiz_response.score }}</p>
-    {% for response in ques_responses %}
-        <p>Question: {{ response.question.question }}</p>
-        <p>A: {{ response.question.option_a }}</p>
-        <p>B: {{ response.question.option_b }}</p>
-        <p>C: {{ response.question.option_c }}</p>
-        <p>D: {{ response.question.option_d }}</p>
-        <p>Correct Ans: {{ response.question.correct_ans }}</p>
-        <p>Your answer: {{ response.que_response.capitalize }}</p>
-    {% endfor %}
-    <p style="color:darkblue; font-family: 'LDFineScript4', 'Times New Roman', sans-serif; font-size:xx-large ">{{ quiz_response.student.student.first_name }} {{ quiz_response.student.student.last_name }}</p>
+    <div class="a">
+        <h3 style="font-size: 300%">Terna Engineering College</h3>
+
+        <h5 style="font-size: 200%">{{ quiz_response.quiz.title }} - {{ quiz_response.quiz.subject.name }}</h5>
+    </div>
+    <div class="b" >
+        Name: {{ quiz_response.student.student.first_name }} {{ quiz_response.student.student.last_name }}<br>
+        Batch: {{ quiz_response.student.batch }}<br>
+        Score: {{ quiz_response.score }}<hr>
+    </div>
+    <div class="c">
+        {% for response in ques_responses %}
+            <p>Question: {{ response.question.question }}</p>
+            <p>A: {{ response.question.option_a }}</p>
+            <p>B: {{ response.question.option_b }}</p>
+            <p>C: {{ response.question.option_c }}</p>
+            <p>D: {{ response.question.option_d }}</p>
+            <p>Your answer: {{ response.que_response.capitalize }}</p>
+        {% endfor %}
+    </div>
+    <div class="a">
+        <p style="color:darkblue; font-family: 'LDFineScript4', 'Times New Roman', sans-serif; font-size:600%">{{ quiz_response.student.student.first_name }} {{ quiz_response.student.student.last_name }}</p>
+    </div>
 {% endblock %}
 
 </body>

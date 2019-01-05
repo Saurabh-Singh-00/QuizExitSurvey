@@ -46,10 +46,11 @@ class TeacherRegisterForm(UserCreationForm):
 class StudentRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
     batch = forms.ModelChoiceField(queryset=Batch.objects.all(), required=True, )
+    roll_no = forms.IntegerField()
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'batch']
+        fields = ['username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'roll_no', 'batch']
 
     def clean_first_name(self):
         if self.cleaned_data["first_name"].strip() == '':
@@ -67,5 +68,6 @@ class StudentRegisterForm(UserCreationForm):
         user.is_teacher = False
         if commit:
             user.save()
-            student = Student.objects.create(student=user, batch=self.cleaned_data.get('batch'))
+            student = Student.objects.create(student=user, batch=self.cleaned_data.get('batch'),
+                                             roll_no=self.cleaned_data.get('roll_no'))
         return user

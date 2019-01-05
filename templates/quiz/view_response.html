@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
+    <p>Your Score: {{ quiz_response.score }}</p>
     {% for response in ques_responses %}
-    <p>Question: {{ response.question.question }}</p>
+        <p>Question: {{ response.question.question }}</p>
         <p>A: {{ response.question.option_a }}</p>
         <p>B: {{ response.question.option_b }}</p>
         <p>C: {{ response.question.option_c }}</p>
@@ -9,4 +10,6 @@
         <p>Correct Ans: {{ response.question.correct_ans }}</p>
         <p>Your answer: {{ response.que_response.capitalize }}</p>
     {% endfor %}
+    <p style="color:darkblue; font-family: 'LDFineScript4', 'Brush Script MT', sans-serif; font-size: xx-large">{{ user.first_name }} {{ user.last_name }}</p>
+    <a href="{% url 'download-response' quiz_response.pk %}">Download this quiz?</a>
 {% endblock %}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: LDFineScript4;
+            src: url('//Users//vedan//PycharmProjects//QuizExitSurvey//templates//quiz//ldfinescript4.ttf');
+            font-weight: bold;
+            font-style: italic;
+            font-size: xx-large;
+        }
+
+        div{
+            text-align-all: center;
+        }
+    </style>
+</head>
+<body>
+{% block content %}
+    <p>Your Score: {{ quiz_response.score }}</p>
+    {% for response in ques_responses %}
+        <p>Question: {{ response.question.question }}</p>
+        <p>A: {{ response.question.option_a }}</p>
+        <p>B: {{ response.question.option_b }}</p>
+        <p>C: {{ response.question.option_c }}</p>
+        <p>D: {{ response.question.option_d }}</p>
+        <p>Correct Ans: {{ response.question.correct_ans }}</p>
+        <p>Your answer: {{ response.que_response.capitalize }}</p>
+    {% endfor %}
+    <p style="color:darkblue; font-family: 'LDFineScript4', 'Times New Roman', sans-serif; font-size:xx-large ">{{ quiz_response.student.student.first_name }} {{ quiz_response.student.student.last_name }}</p>
+{% endblock %}
+
+</body>
+</html>

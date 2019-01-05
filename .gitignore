@@ -10,5 +10,5 @@ db.sqlite3
 #Ignore Virtual Environment
 venv/
 
-#Ignore __pycache__
+#Ignore __pycache__ folder
 **/__pycache__

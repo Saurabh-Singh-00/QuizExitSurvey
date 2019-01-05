@@ -12,10 +12,11 @@ class User(AbstractUser):
 
 class Student(models.Model):
     student = models.OneToOneField(User, on_delete=models.CASCADE)
+    roll_no = models.SmallIntegerField()
     batch = models.ForeignKey('users.Batch', on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"{self.student.username.capitalize()}"
+        return f"{self.student.first_name.capitalize()}"
 
 
 class Subject(models.Model):

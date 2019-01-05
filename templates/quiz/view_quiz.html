@@ -1,16 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
-    {% for question in questions %}
-    <p>Question: {{ question.question }}</p>
-        <p>A: {{ question.option_a }}</p>
-        <p>B: {{ question.option_b }}</p>
-        <p>C: {{ question.option_c }}</p>
-        <p>D: {{ question.option_d }}</p>
-        <p>Correct Ans: {{ question.correct_ans }}</p>
-    {% endfor %}
-    <a class="article-title" href="{% url 'add-quiz' quiz.pk %}">Reassign this quiz?</a><br>
-    {% if quiz.author == user %}
-        <a class="article-title" href="{% url 'edit-quiz' quiz.pk quiz.pk %}">Update this quiz?</a><br>
-        <a class="article-title" href="{% url 'delete-quiz' quiz.pk %}">Delete this quiz?</a><br>
-    {% endif %}
+    <div class="container">
+        <legend>
+            {{ quiz.title }}
+            {% if quiz.is_open %}
+                <span class="float-right">
+                <a class="btn btn-success" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Open </a>
+            </span>
+            {% else %}
+                <span class="float-right">
+                <a class="btn btn-secondary" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Closed </a>
+            </span>
+            {% endif %}
+        </legend>
+        {% for question in questions %}
+            <p>Question: {{ question.question }}</p>
+            <p>A: {{ question.option_a }}</p>
+            <p>B: {{ question.option_b }}</p>
+            <p>C: {{ question.option_c }}</p>
+            <p>D: {{ question.option_d }}</p>
+            <p>Correct Ans: {{ question.correct_ans }}</p>
+        {% endfor %}
+        <span class="align-left"><a class="btn btn-info" href="{% url 'add-quiz' quiz.pk %}">Reassign</a>
+        </span>
+        {% if quiz.author == user.teacher %}
+            <a class="btn btn-warning" href="{% url 'edit-quiz' quiz.pk quiz.pk %}">Change Questions</a>
+            <a class="btn btn-danger" href="{% url 'delete-quiz' quiz.pk %}">Delete</a><br>
+        {% endif %}
+    </div>
+
 {% endblock %}

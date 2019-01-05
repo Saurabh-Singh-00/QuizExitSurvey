@@ -22,7 +22,7 @@
                                 </span>
                         </legend>
                         <hr>
-                        {% for subject in view.get_subject_list %}
+                        {% for subject in view.get_my_subject_list %}
                             <h4>{{ subject }}</h4>
                             {% for quiz in quizzes %}
                                 {% if quiz.author == user.teacher %}
@@ -83,7 +83,7 @@
                                 Open Quizzes
                             </legend>
                             <hr>
-                            {% for subject in view.get_subject_list %}
+                            {% for subject in view.get_subject_with_open_quiz_list %}
                                 <h4>{{ subject }}</h4>
                                 {% for quiz in quizzes %}
                                     {% if subject == quiz.subject.name %}
@@ -101,7 +101,7 @@
                                 Closed Quizzes
                             </legend>
                             <hr>
-                            {% for subject in view.get_subject_list %}
+                            {% for subject in view.get_subject_with_close_quiz_list %}
                                 <h4>{{ subject }}</h4>
                                 {% for quiz in quizzes %}
                                     {% if subject == quiz.subject.name %}

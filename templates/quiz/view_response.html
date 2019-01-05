@@ -2,8 +2,9 @@
 {% block content %}
     <div class="xyz">
         {% if quiz_response and quiz_response.student == user.student %}
-
-            <p>Your Score: {{ quiz_response.score }}</p>
+            <h3>{{ quiz_response.quiz.title }} - Prof. {{ quiz_response.quiz.author.teacher.first_name }}</h3>
+            <h4 style="text-underline: black">Your Score: {{ quiz_response.score }}</h4>
+            <hr>
             {% for response in ques_responses %}
                 <p>Question: {{ response.question.question }}</p>
                 <p>A: {{ response.question.option_a }}</p>
@@ -12,9 +13,7 @@
                 <p>D: {{ response.question.option_d }}</p>
                 <p>Your answer: {{ response.que_response.capitalize }}</p>
             {% endfor %}
-            {#            <p style="color:darkblue; font-family: LDFineScript4, 'Brush Script MT', sans-serif; font-size: xx-large">{{ user.first_name }} {{ user.last_name }}</p>#}
-            <a href="{% url 'download-response' quiz_response.pk %}">Download this quiz?</a>
-
+            <a class="btn btn-success" href="{% url 'download-response' quiz_response.pk %}">Download this quiz</a>
         {% else %}
             <h1>Sorry, we couldn't find your response to this quiz.</h1>
             <a class="btn btn-success" href="{% url 'student-home' user.pk %}">Take me back</a>

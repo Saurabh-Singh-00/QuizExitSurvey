@@ -14,15 +14,31 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from .views import RegisterStudentView, RegisterTeacherView, StudentQuizListView, LoginView, TeacherSubjectListView
+from .views import RegisterStudentView, RegisterTeacherView, StudentQuizListView, LoginView, TeacherSubjectListView, \
+    UserUpdateView, change_password, TeacherProfileView, StudentProfileView
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('register/student/', view=RegisterStudentView.as_view(), name='register-student'),
     path('register/teacher/', view=RegisterTeacherView.as_view(), name='register-teacher'),
-    #path('', view=LoginView.as_view(), name='login'),
+    # path('', view=LoginView.as_view(), name='login'),
     path('login/', view=LoginView.as_view(), name='login'),
     path('logout/', view=auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
+    path('password-reset/', auth_views.PasswordResetView.as_view(template_name="registration/password_reset_form.html"),
+         name='password_reset'),
+    path('password-reset/done/',
+         auth_views.PasswordResetDoneView.as_view(template_name="registration/password_reset_done.html"),
+         name='password_reset_done'),
+    path('password-reset-confirm/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView.as_view(template_name="registration/password_reset_confirm.html"),
+         name='password_reset_confirm'),
+    path('password-reset-complete/',
+         auth_views.PasswordResetCompleteView.as_view(template_name="registration/password_reset_complete.html"),
+         name='password_reset_complete'),
     path('student/<int:pk>/home/', view=StudentQuizListView.as_view(), name='student-home'),
-    path('teacher/<int:pk>/home/', view=TeacherSubjectListView.as_view(), name='teacher-home')
+    path('teacher/<int:pk>/home/', view=TeacherSubjectListView.as_view(), name='teacher-home'),
+    path('teacher/<int:pk>/profile/', view=TeacherProfileView.as_view(), name='teacher-profile'),
+    path('student/<int:pk>/profile/', view=StudentProfileView.as_view(), name='student-profile'),
+    path('<int:pk>/update/', view=UserUpdateView.as_view(), name='user-update'),
+    path('password/change/', change_password, name='change_password'),
 ]

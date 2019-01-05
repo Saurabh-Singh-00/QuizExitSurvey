@@ -4,6 +4,7 @@
     <div class="xyz">
     <form method="post">
         {% csrf_token %}
+        <legend>{{ quiz.title }} - {{ quiz.subject.name }}</legend>
         <fieldset class="form-group">
             {{ form|crispy }}
         </fieldset>
@@ -11,3 +12,4 @@
     </form>
     </div>
 {% endblock %}
+s

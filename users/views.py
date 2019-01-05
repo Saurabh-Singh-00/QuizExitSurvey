@@ -1,14 +1,15 @@
 # Create your views here.
-from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView
-from django.views.generic import ListView
+from django.views.generic import CreateView, UpdateView
+from django.views.generic import *
 from django.views.generic.base import View, ContextMixin
 
 from Quizzes_Surveys.decorators import student_required, teacher_required
@@ -65,6 +66,24 @@ class StudentQuizListView(UserPassesTestMixin, ListView, ContextMixin):
                 subject_list.append(subject)
         return subject_list
 
+    def get_subject_with_open_quiz_list(self):
+        subject_list = []
+        for quiz in Quiz.objects.filter(batches__student=self.user.student).order_by('subject__name'):
+            if quiz.is_open:
+                subject = quiz.subject.name
+                if subject not in subject_list:
+                    subject_list.append(subject)
+        return subject_list
+
+    def get_subject_with_close_quiz_list(self):
+        subject_list = []
+        for quiz in Quiz.objects.filter(batches__student=self.user.student).order_by('subject__name'):
+            if not quiz.is_open:
+                subject = quiz.subject.name
+                if subject not in subject_list:
+                    subject_list.append(subject)
+        return subject_list
+
     def test_func(self):
         return self.kwargs['pk'] == self.request.user.pk
 
@@ -89,6 +108,14 @@ class TeacherSubjectListView(UserPassesTestMixin, ListView):
             if subject not in subject_list:
                 subject_list.append(subject)
         subject_list.sort()
+        return subject_list
+
+    def get_my_subject_list(self):
+        subject_list = []
+        for quiz in Quiz.objects.filter(author=self.user.teacher).order_by('subject__name'):
+                subject = quiz.subject.name
+                if subject not in subject_list:
+                    subject_list.append(subject)
         return subject_list
 
     def test_func(self):
@@ -119,3 +146,43 @@ class LoginView(View):
                 return redirect('teacher-home', pk=user.pk)
 
         return redirect('login')
+
+
+class UserUpdateView(UpdateView):
+    model = User
+    template_name = 'users/update_profile.html'
+    fields = ['first_name', 'last_name', 'email']
+
+    def get_success_url(self):
+        user = self.get_object()
+        if user.is_teacher:
+            return reverse_lazy('teacher-home', kwargs={'pk': user.pk})
+        else:
+            return reverse_lazy('student-home', kwargs={'pk': user.pk})
+
+
+class TeacherProfileView(DetailView):
+    model = Teacher
+    template_name = 'users/user_detail.html'
+
+
+class StudentProfileView(DetailView):
+    model = Student
+    template_name = 'users/user_detail.html'
+
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('change_password')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'users/change_password.html', {
+        'form': form
+    })

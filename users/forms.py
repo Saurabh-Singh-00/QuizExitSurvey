@@ -71,3 +71,4 @@ class StudentRegisterForm(UserCreationForm):
             student = Student.objects.create(student=user, batch=self.cleaned_data.get('batch'),
                                              roll_no=self.cleaned_data.get('roll_no'))
         return user
+

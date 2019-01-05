@@ -1,3 +1,4 @@
+{% load static  %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
     <style>
         @font-face {
             font-family: LDFineScript4;
-            src: url('//Users//vedan//PycharmProjects//QuizExitSurvey//templates//quiz//ldfinescript4.ttf');
+            src: url('{% static "/quiz/fonts/ldfinescript4.ttf" %}');
             font-weight: bold;
             font-style: italic;
             font-size: 200%;
@@ -56,6 +57,5 @@
         <p style="color:darkblue; font-family: 'LDFineScript4', 'Times New Roman', sans-serif; font-size:600%">{{ quiz_response.student.student.first_name }} {{ quiz_response.student.student.last_name }}</p>
     </div>
 {% endblock %}
-
 </body>
 </html>

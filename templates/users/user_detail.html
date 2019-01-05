@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{##}
+{#{% block head %}#}
+{#<title>{{ user.first_name }}</title>#}
+{#{% endblock %}#}
+
+{% block content %}
+    <div class="container">
+        <div class="xyz">
+            <h1>Profile</h1>
+            <p>Username: {{ user }}</p>
+            <p>First name: {{ user.first_name }}</p>
+            <p>Last name: {{ user.last_name }}</p>
+            <p>Email: {{ user.email }}</p>
+            <a class="btn btn-info" href="{% url 'user-update' user.pk %}">Update Profile</a>
+            <br>
+            <br>
+            <a class="btn btn-warning" href="{% url 'change_password' %}">Change Password</a>
+        </div>
+    </div>
+{% endblock %}

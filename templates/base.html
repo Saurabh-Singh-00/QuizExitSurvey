@@ -104,13 +104,6 @@
         display: none;
     }
 
-    @font-face {
-        font-family: LDFineScript4;
-        src: url('//Users//vedan//PycharmProjects//QuizExitSurvey//templates//quiz//ldfinescript4.ttf');
-        font-weight: bold;
-        font-style: italic;
-        font-size: xx-large;
-    }
 
     div.xyz {
         display: table;
@@ -152,11 +145,11 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     {% if user.is_authenticated and user.is_teacher %}
-                        <a href="{% url 'teacher-home' user.pk %}" class="nav-link">
+                        <a href="{% url 'teacher-profile' user.pk %}" class="nav-link">
                             Welcome, Prof. {{ user.first_name.capitalize }}
                         </a>
                     {% else %}
-                        <a href="{% url 'student-home' user.pk %}" class="nav-link">
+                        <a href="{% url 'teacher-profile' user.pk %}" class="nav-link">
                             Hello! {{ user.first_name.capitalize }}
                         </a>
                     {% endif %}

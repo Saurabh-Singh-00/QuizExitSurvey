@@ -116,6 +116,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'quiz/static'),
+)
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Added Auth for Abstract User
@@ -127,3 +130,11 @@ LOGIN_REDIRECT_URL = ''
 
 # MESSAGE STORAGE
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'vedangnaik007@gmail.com'
+EMAIL_HOST_PASSWORD = str(os.environ['GMAIL_PASSWORD'])

@@ -3,11 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
+from django.template import Context
 from django.template.loader import get_template
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from xhtml2pdf import pisa
+
 from Quizzes_Surveys.decorators import teacher_required, student_required
-from Quizzes_Surveys.utils import render_to_pdf
+from Quizzes_Surveys.utils import link_callback
 from .models import Quiz, Question, QuizResponse, QuestionResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import AccessMixin, UserPassesTestMixin
@@ -59,7 +62,7 @@ def attempt_quiz(request, pk):
     else:
         return redirect('view-response', pk=0)
 
-    return render(request, 'quiz/attempt.html', {'form': form})
+    return render(request, 'quiz/attempt.html', {'form': form, 'quiz': quiz})
 
 
 @login_required
@@ -80,20 +83,24 @@ def view_response(request, pk):
 @login_required
 def generate_pdf(request, pk):
     quiz_response = get_object_or_404(QuizResponse, pk=pk)
-    template = 'quiz/pdf_response.html'
+    template_path = 'quiz/pdf_response.html'
     ques_responses = QuestionResponse.objects.filter(quiz_response=quiz_response)
     context = {'ques_responses': ques_responses, 'quiz_response': quiz_response}
-    pdf = render_to_pdf(template, context)
-    if pdf:
-        response = HttpResponse(pdf, content_type='application/pdf')
-        filename = quiz_response.student.student.first_name + '_' + quiz_response.student.student.last_name + "_" + quiz_response.quiz.title + "_" + quiz_response.quiz.subject.name + ".pdf"
-        content = "inline; filename='%s'" % (filename)
-        download = request.GET.get('download')
-        if download:
-            content = "attachment; filename='%s'" % (filename)
-        response['Content-Disposition'] = content
-        return response
-    return HttpResponse(pdf, content_type='application/pdf')
+    response = HttpResponse(content_type='application/pdf')
+    batch = Batch.objects.filter(student=quiz_response.student).first()
+    filename = batch.year + '_' + batch.division + '_' + str(
+        quiz_response.student.roll_no) + '_' + quiz_response.quiz.title + '_' + quiz_response.quiz.subject.name
+    response['Content-Disposition'] = f'attachment; filename="{filename}.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+    # create a pdf
+    pisaStatus = pisa.CreatePDF(
+        html, dest=response, link_callback=link_callback)
+    # if error then show some funy view
+    if pisaStatus.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response
 
 
 @teacher_required

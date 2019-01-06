@@ -41,7 +41,7 @@ class Question(models.Model):
 
 class QuestionResponse(models.Model):
     quiz_response = models.ForeignKey('quiz.QuizResponse', on_delete=models.CASCADE)
-    question = models.OneToOneField(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
     options = [
         ('A', 'A'),
         ('B', 'B'),

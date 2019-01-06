@@ -51,8 +51,12 @@
             <p>C: {{ response.question.option_c }}</p>
             <p>D: {{ response.question.option_d }}</p>
             <p>Your answer: {{ response.que_response.capitalize }}</p>
+            <hr>
         {% endfor %}
     </div>
+    <br>
+    <br>
+    <hr>
     <div class="a">
         <p style="color:darkblue; font-family: 'LDFineScript4', 'Times New Roman', sans-serif; font-size:600%">{{ quiz_response.student.student.first_name }} {{ quiz_response.student.student.last_name }}</p>
     </div>

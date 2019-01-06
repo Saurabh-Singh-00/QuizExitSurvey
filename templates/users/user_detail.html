@@ -6,17 +6,37 @@
 {#{% endblock %}#}
 
 {% block content %}
-    <div class="container">
-        <div class="xyz">
-            <h1>Profile</h1>
-            <p>Username: {{ user }}</p>
-            <p>First name: {{ user.first_name }}</p>
-            <p>Last name: {{ user.last_name }}</p>
-            <p>Email: {{ user.email }}</p>
-            <a class="btn btn-info" href="{% url 'user-update' user.pk %}">Update Profile</a>
-            <br>
-            <br>
-            <a class="btn btn-warning" href="{% url 'change_password' %}">Change Password</a>
+    {% if user.is_authenticated %}
+        <div class="container">
+            <div class="xyz">
+                <h1>Profile</h1>
+                <p>Username: {{ user }}</p>
+                <p>First name: {{ user.first_name }}</p>
+                <p>Last name: {{ user.last_name }}</p>
+                <p>Email: {{ user.email }}</p>
+                {% if user.is_teacher %}
+                    <p>Batches: {{ batches }}</p>
+                {% else %}
+                    <p>Batch: {{ batch }}</p>
+                    <p>Roll Number: {{ roll_no }}</p>
+                {% endif %}
+                <p>Subjects: {{ subjects }}</p>
+                <hr>
+                <a class="btn btn-info" href="{% url 'user-update' user.pk %}">Update Profile</a>
+                <br>
+                <br>
+                <a class="btn btn-warning" href="{% url 'change_password' %}">Change Password</a>
+                <br>
+                <br>
+                {% if user.is_teacher %}
+                    <a class="btn btn-danger" href="{% url 'teacher-update' %}">Register for a new semester</a><br>
+                    <small>Please note, doing this will delete all your existing quizzes.</small>
+                {% else %}
+                    <a class="btn btn-danger" href="{% url 'student-update' %}">Register for a new semester</a><br>
+                    <small>Mate, do this only at the start of a semester. Trust us! We made this ; )
+                    </small>
+                {% endif %}
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}

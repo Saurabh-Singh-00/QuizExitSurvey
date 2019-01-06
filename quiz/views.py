@@ -72,7 +72,8 @@ def view_response(request, pk):
     if pk != 0:
         quiz_response = get_object_or_404(QuizResponse, pk=pk)
         ques_responses = QuestionResponse.objects.filter(quiz_response=quiz_response)
-        context = {'ques_responses': ques_responses, 'quiz_response': quiz_response}
+        out_of = ques_responses.__len__()
+        context = {'ques_responses': ques_responses, 'quiz_response': quiz_response, 'out_of': out_of}
     else:
         context = {'quiz_response': False}
 
@@ -184,6 +185,11 @@ def edit_quiz(request, opk, npk):
 @teacher_required
 def view_quiz(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
+    batch_queryset = Batch.objects.filter(quiz=quiz)
+    batches = ""
+    for batch in batch_queryset:
+        batches += str(batch) + ", "
+    batches = batches[:-2]
     questions = Question.objects.filter(quiz=quiz)
     responses = QuizResponse.objects.filter(quiz=quiz).exists()
     user = request.user.teacher
@@ -191,6 +197,7 @@ def view_quiz(request, pk):
         'questions': questions,
         'quiz': quiz,
         'author': user,
+        'batches': batches,
         'responses': responses
     }
     return render(request, 'quiz/view_quiz.html', context)
@@ -214,7 +221,7 @@ class QuizDeleteView(UserPassesTestMixin, DeleteView):
 
 @method_decorator([login_required, teacher_required], name='dispatch')
 class QuizUpdateView(UpdateView):
-    template_name = 'quiz/add_quiz.html'
+    template_name = 'quiz/change_status.html'
     model = Quiz
     fields = ['title', 'is_open']
 

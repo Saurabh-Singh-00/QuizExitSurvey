@@ -1,33 +1,45 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">
-    <legend>
-        {{ quiz.title }}
-        <span class="float-right">
+    <div class="container">
+        <legend>
+            {{ quiz.title }}
+            <span class="float-right">
             {% if quiz.is_open and quiz.author == user.teacher %}
                 <a class="btn btn-success" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Open </a>
             {% elif quiz.author == user.teacher %}
                 <a class="btn btn-secondary" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Closed </a>
             {% endif %}
+        </span><br>
+            <small>
+                Subject: {{ quiz.subject }}
+            </small>
+            <br>
+            <small>
+                Currently assigned to: {{ batches }}
+            </small>
+        </legend>
+        <hr>
+        {% for question in questions %}
+            <p>Question: {{ question.question }}</p>
+            <p>A: {{ question.option_a }}</p>
+            <p>B: {{ question.option_b }}</p>
+            <p>C: {{ question.option_c }}</p>
+            <p>D: {{ question.option_d }}</p>
+            <p>Correct Ans: {{ question.correct_ans }}</p>
+            <hr>
+        {% endfor %}
+        <span class="align-left"><a class="btn btn-info" href="{% url 'add-quiz' quiz.pk %}">Reassign</a>
         </span>
-    </legend>
-    {% for question in questions %}
-        <p>Question: {{ question.question }}</p>
-        <p>A: {{ question.option_a }}</p>
-        <p>B: {{ question.option_b }}</p>
-        <p>C: {{ question.option_c }}</p>
-        <p>D: {{ question.option_d }}</p>
-        <p>Correct Ans: {{ question.correct_ans }}</p>
-    {% endfor %}
-    <span class="align-left"><a class="btn btn-info" href="{% url 'add-quiz' quiz.pk %}">Reassign</a>
-        </span>
-    {% if quiz.author == user.teacher %}
-        {% if responses %}
-            <a class="btn btn-danger" href="{% url 'delete-quiz' quiz.pk %}">Delete</a><br>
-            <p>There are responses to this quiz hence, it cannot be updated. Please consider reassigning this quiz.</p>
+        {% if quiz.author == user.teacher %}
+            {% if responses %}
+                <a class="btn btn-danger" href="{% url 'delete-quiz' quiz.pk %}">Delete</a><br>
+                <small>There are responses to this quiz, hence, the questions cannot be changed. Please consider
+                    reassigning this quiz.
+                </small>
+            {% else %}
+                <a class="btn btn-warning" href="{% url 'edit-quiz' quiz.pk quiz.pk %}">Change Questions</a>
+                <a class="btn btn-danger" href="{% url 'delete-quiz' quiz.pk %}">Delete</a><br>
+            {% endif %}
         {% endif %}
-        <a class="btn btn-warning" href="{% url 'edit-quiz' quiz.pk quiz.pk %}">Change Questions</a>
-        <a class="btn btn-danger" href="{% url 'delete-quiz' quiz.pk %}">Delete</a><br>
-    {% endif %}
-</div>
+    </div>
 {% endblock %}

@@ -148,8 +148,8 @@
                         <a href="{% url 'teacher-profile' user.pk %}" class="nav-link">
                             Welcome, Prof. {{ user.first_name.capitalize }}
                         </a>
-                    {% else %}
-                        <a href="{% url 'teacher-profile' user.pk %}" class="nav-link">
+                    {% elif user.is_authenticated and not user.is_teacher%}
+                        <a href="{% url 'student-profile' user.pk %}" class="nav-link">
                             Hello! {{ user.first_name.capitalize }}
                         </a>
                     {% endif %}
@@ -161,10 +161,11 @@
         {% endif %}
     </div>
 </nav>
-{% block content %}
+<main role="main" class="container">
+    {% block content %}
 
-{% endblock content %}
-
+    {% endblock content %}
+</main>
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

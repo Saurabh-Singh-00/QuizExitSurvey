@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 from .views import RegisterStudentView, RegisterTeacherView, StudentQuizListView, LoginView, TeacherSubjectListView, \
-    UserUpdateView, change_password, TeacherProfileView, StudentProfileView
+    UserUpdateView, change_password, teacher_profile, student_profile, update_teacher, update_student
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -37,8 +37,10 @@ urlpatterns = [
          name='password_reset_complete'),
     path('student/<int:pk>/home/', view=StudentQuizListView.as_view(), name='student-home'),
     path('teacher/<int:pk>/home/', view=TeacherSubjectListView.as_view(), name='teacher-home'),
-    path('teacher/<int:pk>/profile/', view=TeacherProfileView.as_view(), name='teacher-profile'),
-    path('student/<int:pk>/profile/', view=StudentProfileView.as_view(), name='student-profile'),
+    path('teacher/<int:pk>/profile/', view=teacher_profile, name='teacher-profile'),
+    path('student/<int:pk>/profile/', view=student_profile, name='student-profile'),
     path('<int:pk>/update/', view=UserUpdateView.as_view(), name='user-update'),
     path('password/change/', change_password, name='change_password'),
+    path('teacher/update/', view=update_teacher, name='teacher-update'),
+    path('student/update/', view=update_student, name='student-update'),
 ]

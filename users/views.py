@@ -3,16 +3,13 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, UpdateView
 from django.views.generic import *
 from django.views.generic.base import View, ContextMixin
-
 from Quizzes_Surveys.decorators import student_required, teacher_required
 from quiz.models import Quiz
 from users.models import User, Student, Subject, Teacher, Batch

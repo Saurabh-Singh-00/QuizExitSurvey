@@ -61,4 +61,4 @@ class QuizResponse(models.Model):
     score = models.SmallIntegerField()
 
     def __str__(self):
-        return f"{self.quiz.title.upper() + ' Question'}"
+        return f"{self.quiz.title.upper() + ' Response'}"

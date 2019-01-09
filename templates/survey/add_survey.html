@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container mt-3">
+        <div class="col-md-8 col-sm-12 offset-md-2">
+            <h3>Add Exit Survey</h3>
+            <hr>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form|crispy }}
+                {% for message in messages %}
+                    <div class="alert alert-primary">
+                        <a class="close" href="#" data-dismiss="alert">×</a>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                <input class="btn btn-outline-success" type="submit" value="Create Quiz"/>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

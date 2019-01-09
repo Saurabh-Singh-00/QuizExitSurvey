@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="xyz">
+    <form method="post">
+        {% csrf_token %}
+        <legend>{{ survey.title }} - {{ survey.subject.name }}</legend>
+        <fieldset class="form-group">
+            {{ form|crispy }}
+        </fieldset>
+        <hr>
+        <input class="btn btn-outline-success" type="submit" value="I'm done">
+    </form>
+    </div>
+{% endblock %}
+s

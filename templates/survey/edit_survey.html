@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="col-md-12 col-sm-12 form-selector">
+                    {{ form|crispy }}
+                    <div class="input-group-append float-right mt-2 mb-4">
+                        <button class="btn btn-success add-form-row ml-2">+ Add question</button>
+                        <button class="btn btn-danger remove-form-row ml-2">- Delete above question</button>
+                    </div>
+                    <div class="mb-4">
+                        <hr>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type='text/javascript'>
+        function updateElementIndex(el, prefix, ndx) {
+            let id_regex = new RegExp('(' + prefix + '-\\d+)');
+            let replacement = prefix + '-' + ndx;
+            if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+            if (el.id) el.id = el.id.replace(id_regex, replacement);
+            if (el.name) el.name = el.name.replace(id_regex, replacement);
+        }
+
+        function cloneMore(selector, prefix) {
+            let newElement = $(selector).clone(true);
+            let total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+            console.log(newElement);
+            newElement.find(':input').each(function () {
+                let input = document.getElementById(this.id);
+                if (input != null) {
+                    let name = $(input).attr('name').replace('-' + (total - 1) + '-', '-' + total + '-');
+                    console.log(name)
+                    let id = 'id_' + name;
+                    $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+                }
+            });
+            total++;
+            $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+            $(selector).after(newElement);
+            {#let conditionRow = $('.form-selector:not(:last)');#}
+            {#conditionRow.find('.btn.add-form-row')#}
+            {#    .removeClass('btn-success').addClass('btn-danger')#}
+            {#    .removeClass('add-form-row').addClass('remove-form-row')#}
+            {#    .html('<button">-</button>');#}
+            return false;
+        }
+
+        function deleteForm(prefix, btn) {
+            let total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+            if (total == 1) {
+                alert("There should be at least one question");
+            }
+            if (total > 1) {
+                btn.closest('.form-selector').remove();
+                let forms = $('.form-selector');
+                $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+                for (let i = 0, formCount = forms.length; i < formCount; i++) {
+                    $(forms.get(i)).find(':input').each(function () {
+                        updateElementIndex(this, prefix, i);
+                    });
+                }
+            }
+            return false;
+        }
+
+        $(document).on('click', '.add-form-row', function (e) {
+            e.preventDefault();
+            cloneMore('.form-selector:last', 'form');
+            return false;
+        });
+        $(document).on('click', '.remove-form-row', function (e) {
+            e.preventDefault();
+            let confirm_delete = confirm("Are you sure you want to delete this question ? The changes cannot be reversed")
+            if (confirm_delete) {
+                deleteForm('form', $(this));
+            }
+            return false;
+        });
+    </script>
+{% endblock scripts %}
+

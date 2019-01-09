@@ -1,26 +1,20 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, get_object_or_404, redirect, render_to_response
-from django.template import Context
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import get_template
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from xhtml2pdf import pisa
-
 from Quizzes_Surveys.decorators import teacher_required, student_required
 from Quizzes_Surveys.utils import link_callback
 from .models import Quiz, Question, QuizResponse, QuestionResponse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import AccessMixin, UserPassesTestMixin
+from django.views.generic import UpdateView, DeleteView
+from django.contrib.auth.mixins import UserPassesTestMixin
 from .forms import QuestionFormSet, QuizForm, TakeQuizForm
-from users.models import Teacher, Subject, Batch
-from django.contrib.auth.mixins import LoginRequiredMixin
-import copy
+from users.models import Batch
 
-
-# Create your views Question
 
 @login_required
 @student_required
@@ -30,11 +24,10 @@ def attempt_quiz(request, pk):
     student = request.user.student
 
     if QuizResponse.objects.filter(quiz=quiz, student=student).exists():
-        quiz_response = QuizResponse.objects.filter(quiz=quiz).first()
-        ques_responses = QuestionResponse.objects.filter(quiz_response=quiz_response)
+        quiz_response = QuizResponse.objects.filter(quiz=quiz, student=student).first()
         return redirect('view-response', pk=quiz_response.pk)
 
-    if quiz.is_open:
+    elif quiz.is_open:
         if request.method == 'POST':
             form = TakeQuizForm(data=request.POST, quiz=quiz)
             if form.is_valid():
@@ -56,7 +49,6 @@ def attempt_quiz(request, pk):
                     quiz_response.score = score
                     quiz_response.save()
                     return redirect('view-response', pk=quiz_response.pk)
-
         else:
             form = TakeQuizForm(quiz=quiz)
     else:
@@ -191,6 +183,21 @@ def view_quiz(request, pk):
         batches += str(batch) + ", "
     batches = batches[:-2]
     questions = Question.objects.filter(quiz=quiz)
+    no_responses = []
+    for question in questions:
+        chosen = [0, 0, 0, 0]
+        q_responses = QuestionResponse.objects.filter(question=question)
+        for q_response in q_responses:
+            if q_response.que_response == "a":
+                chosen[0] += 1
+            elif q_response.que_response == "b":
+                chosen[1] += 1
+            elif q_response.que_response == "c":
+                chosen[2] += 1
+            else:
+                chosen[3] += 1
+        no_responses.append(chosen)
+    print(no_responses)
     responses = QuizResponse.objects.filter(quiz=quiz).exists()
     user = request.user.teacher
     context = {

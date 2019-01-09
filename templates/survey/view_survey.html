@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <legend>
+            {{ quiz.title }}
+            <span class="float-right">
+            {% if quiz.is_open and quiz.author == user.teacher %}
+                <a class="btn btn-success" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Open </a>
+            {% elif quiz.author == user.teacher %}
+                <a class="btn btn-secondary" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Closed </a>
+            {% endif %}
+        </span><br>
+            <small>
+                Subject: {{ survey.subject }}
+            </small>
+            <br>
+            <small>
+                Currently assigned to: {{ batches }}
+            </small>
+        </legend>
+        <hr>
+        {% for question in questions %}
+            <p>Question: {{ question.squestion }}</p>
+            <hr>
+        {% endfor %}
+        <span class="align-left"><a class="btn btn-info" href="{% url 'add-survey' survey.pk %}">Reassign</a>
+        </span>
+        {% if survey.author == user.teacher %}
+            {% if responses %}
+                <a class="btn btn-danger" href="{% url 'delete-survey' survey.pk %}">Delete</a><br>
+                <small>There are responses to this quiz, hence, the questions cannot be changed. Please consider
+                    reassigning this quiz.
+                </small>
+            {% else %}
+                <a class="btn btn-warning" href="{% url 'edit-survey' survey.pk survey.pk %}">Change Questions</a>
+                <a class="btn btn-danger" href="{% url 'delete-survey' survey.pk %}">Delete</a><br>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

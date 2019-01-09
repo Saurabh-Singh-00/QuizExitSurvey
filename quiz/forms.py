@@ -80,3 +80,5 @@ class TakeQuizForm(forms.ModelForm):
                 widget=forms.RadioSelect, label=str(ques_no) + ") " + question.question, required=True)
             self.fields['question_no_%d' % ques_no] = field
             ques_no += 1
+
+

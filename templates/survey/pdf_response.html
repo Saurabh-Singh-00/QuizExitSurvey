@@ -1,0 +1,60 @@
+{% load static  %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: LDFineScript4;
+            src: url('{% static "/quiz/fonts/ldfinescript4.ttf" %}');
+            font-weight: bold;
+            font-style: italic;
+            font-size: 200%;
+        }
+
+        div.a {
+            text-align-all: center;
+            text-align: center;
+            display: table;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+
+        div.b {
+            font-size: 180%;
+        }
+
+        div.c{
+            font-size: 150%;
+        }
+
+    </style>
+</head>
+<body>
+{% block content %}
+    <div class="a">
+        <h3 style="font-size: 300%">Terna Engineering College</h3>
+
+        <h5 style="font-size: 200%">{{ survey_response.survey.title }} - {{ survey_response.survey.subject.name }}</h5>
+    </div>
+    <div class="b" >
+        Name: &nbsp;{{ survey_response.student.student.first_name }} {{ survey_response.student.student.last_name }}<br>
+        Batch: &nbsp;{{ survey_response.student.batch }}<br>
+        Roll Number: &nbsp;{{ survey_response.student.roll_no }}<br>
+    <hr>
+    </div>
+    <div class="c">
+        {% for response in ques_responses %}
+            <p>{{ response.squestion.squestion }} :&nbsp; {{ response.que_response.capitalize }}</p>
+            <hr>
+        {% endfor %}
+    </div>
+    <br>
+    <br>
+    <div class="a">
+        <p style="color:darkblue; font-family: 'LDFineScript4', 'Times New Roman', sans-serif; font-size:600%">{{ survey_response.student.student.first_name }} {{ survey_response.student.student.last_name }}</p>
+    </div>
+{% endblock %}
+</body>
+</html>

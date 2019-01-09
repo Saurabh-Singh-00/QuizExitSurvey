@@ -22,5 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('quiz/', include('quiz.urls')),
     path('users/', include('users.urls')),
+    path('exit/', include('exit.urls')),
     path('', view=LoginView.as_view(), name='login')
 ]

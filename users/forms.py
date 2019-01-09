@@ -1,12 +1,9 @@
 from django import forms
-from django.db import transaction
-from django.shortcuts import _get_queryset
-
 from .models import User, Teacher, Student
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.db import transaction
-
+import re
 from .models import Subject, Batch, User, Teacher
 
 
@@ -61,6 +58,16 @@ class StudentRegisterForm(UserCreationForm):
         if self.cleaned_data["last_name"].strip() == '':
             raise ValidationError("Last name is required.")
         return self.cleaned_data["last_name"].capitalize()
+
+    def clean_username(self):
+        username = self.cleaned_data['username'].upper()
+        if username.strip() == '':
+            raise ValidationError("username is required.")
+        regex = re.compile(r"TUS?\d(F|S|SF)[12]\d[12]\d{3,4}")
+        if regex.search(username):
+            return username
+        else:
+            raise ValidationError("username should be your ID")
 
     @transaction.atomic
     def save(self, commit=True):

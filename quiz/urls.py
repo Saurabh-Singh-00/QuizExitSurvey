@@ -1,8 +1,6 @@
 from django.urls import path
 from . import views
 
-# from .views import QuizCreateView
-
 
 urlpatterns = [
     path('<int:pk>/attempt/', views.attempt_quiz, name='attempt-quiz'),

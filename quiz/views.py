@@ -238,3 +238,56 @@ class QuizUpdateView(UpdateView):
     def get_success_url(self):
         quiz = self.get_object()
         return reverse_lazy('view-quiz', kwargs={'pk': quiz.pk})
+
+
+
+
+
+
+
+@login_required
+@teacher_required
+def generate_excel(request, pk):
+    import xlwt
+    quiz = get_object_or_404(Quiz, pk=pk)
+    ques = Question.objects.filter(quiz=quiz)
+    responses = QuizResponse.objects.values_list(
+        'student__roll_no',
+        'student__student__first_name',
+        'student__student__last_name',
+        'student__batch__division',
+    ).filter(quiz=quiz)
+    response = HttpResponse(content_type='application/ms-excel')
+    file_name = 'Quiz ' + '-'.join([str(x) for x in quiz.batches.all()])
+    print(file_name)
+    response['Content-Disposition'] = f'attachment; filename="{file_name}.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet(f'{quiz.subject.name}')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Roll No', 'First name', 'Last name', 'Division']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    for col_num in range(len(columns), len(ques)+len(columns)):
+        ws.write(row_num, col_num, ques[col_num-len(columns)].question, font_style)
+
+    row_num += 1
+    for i in range(len(responses)):
+        for j in range(len(responses[i])):
+            ws.write(row_num, j, responses[i][j], font_style)
+
+        row_num += 1
+
+    print(ques)
+    print(responses)
+    wb.save(response)
+    return response
+    # return HttpResponse("<h2>Download Excel</h2>")

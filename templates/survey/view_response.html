@@ -5,7 +5,7 @@
             <h3>{{ survey_response.survey.title }} - Prof. {{ survey_response.survey.author.teacher.first_name }}</h3>
             <hr>
             {% for response in ques_responses %}
-                <p>{{ response.squestion.squestion }}:&nbsp; {{ response.que_response }}</p>
+                <p>{{ response.squestion.squestion }}:&nbsp; {{ response.que_response }}/5</p>
                 <hr>
             {% endfor %}
             <a class="btn btn-success" href="{% url 'download-survey-response' survey_response.pk %}">Download this survey</a>

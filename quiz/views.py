@@ -205,7 +205,8 @@ def view_quiz(request, pk):
         'quiz': quiz,
         'author': user,
         'batches': batches,
-        'responses': responses
+        'responses': responses,
+        'no_of_responses': no_responses,
     }
     return render(request, 'quiz/view_quiz.html', context)
 
@@ -256,6 +257,7 @@ def generate_excel(request, pk):
         'student__student__first_name',
         'student__student__last_name',
         'student__batch__division',
+        'student'
     ).filter(quiz=quiz)
     response = HttpResponse(content_type='application/ms-excel')
     file_name = 'Quiz ' + '-'.join([str(x) for x in quiz.batches.all()])
@@ -271,7 +273,7 @@ def generate_excel(request, pk):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = ['Roll No', 'First name', 'Last name', 'Division']
+    columns = ['Roll No', 'First name', 'Last name', 'Division', 'Student']
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
@@ -283,11 +285,10 @@ def generate_excel(request, pk):
     for i in range(len(responses)):
         for j in range(len(responses[i])):
             ws.write(row_num, j, responses[i][j], font_style)
-
+        for k in range(len(ques)):
+            res = QuestionResponse.objects.filter(question=ques[k], quiz_response__student=responses[i][-1]).first()
+            ws.write(row_num, k+len(responses[0]), res.que_response, font_style)
         row_num += 1
-
-    print(ques)
-    print(responses)
     wb.save(response)
     return response
     # return HttpResponse("<h2>Download Excel</h2>")

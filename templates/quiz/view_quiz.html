@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="container">
+    <div class="container mt-2 mb-4">
         <legend>
             {{ quiz.title }}
             <span class="float-right">
@@ -16,6 +16,7 @@
             <br>
             <small>
                 Currently assigned to: {{ batches }}
+                <a href="{% url 'generate-excel' quiz.pk %}"><i class="fas fa-file-download mr-2 ml-4"></i>Download Excel</a>
             </small>
         </legend>
         <hr>
@@ -36,6 +37,16 @@
                 <small>There are responses to this quiz, hence, the questions cannot be changed. Please consider
                     reassigning this quiz.
                 </small>
+                <div class="row">
+                    {% for i in questions %}
+                        <div class="col-sm-12 col-md-6">
+                            <canvas id="chart-{{ forloop.counter0 }}"></canvas>
+                            <div class="row">
+                                <a href="" download="{{ i.question }}.png" class="btn btn-success mr-auto ml-auto" id="btn-img-{{ forloop.counter0 }}" onclick="downloadImage(this, event, {{ forloop.counter0 }})">Download Image</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             {% else %}
                 <a class="btn btn-warning" href="{% url 'edit-quiz' quiz.pk quiz.pk %}">Change Questions</a>
                 <a class="btn btn-danger" href="{% url 'delete-quiz' quiz.pk %}">Delete</a><br>
@@ -43,3 +54,46 @@
         {% endif %}
     </div>
 {% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+    <script>
+        {% for i in questions %}
+            new Chart(document.getElementById("chart-{{ forloop.counter0 }}").getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ["{{ i.option_a }}", "{{ i.option_b }}", "{{ i.option_c }}", "{{ i.option_d }}"],
+                    datasets: [{
+                        label: '# of Votes',
+                        data: [
+                                {{ no_of_responses }}[{{ forloop.counter0 }}][0],
+                                {{ no_of_responses }}[{{ forloop.counter0 }}][1],
+                                {{ no_of_responses }}[{{ forloop.counter0 }}][2],
+                                {{ no_of_responses }}[{{ forloop.counter0 }}][3]
+                        ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        {% endfor %}
+
+    function downloadImage(button, event, id) {
+        button.href = document.getElementById('chart-'+id).toDataURL("image/png")
+    }
+    </script>
+{% endblock scripts %}

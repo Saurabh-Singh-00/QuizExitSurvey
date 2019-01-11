@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block title %}
+    <title>{{ quiz_response.quiz.title }}</title>
+{% endblock %}
 {% block content %}
     <div class="xyz">
         {% if quiz_response and quiz_response.student == user.student %}

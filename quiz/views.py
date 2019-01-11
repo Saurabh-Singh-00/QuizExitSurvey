@@ -241,11 +241,6 @@ class QuizUpdateView(UpdateView):
         return reverse_lazy('view-quiz', kwargs={'pk': quiz.pk})
 
 
-
-
-
-
-
 @login_required
 @teacher_required
 def generate_excel(request, pk):
@@ -265,6 +260,8 @@ def generate_excel(request, pk):
     response['Content-Disposition'] = f'attachment; filename="{file_name}.xls"'
 
     wb = xlwt.Workbook(encoding='utf-8')
+    xlwt.add_palette_colour("custom_colour", 0x21)
+    wb.set_colour_RGB(0x21, 251, 228, 228)
     ws = wb.add_sheet(f'{quiz.subject.name}')
 
     # Sheet header, first row
@@ -278,16 +275,24 @@ def generate_excel(request, pk):
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
 
-    for col_num in range(len(columns), len(ques)+len(columns)):
-        ws.write(row_num, col_num, ques[col_num-len(columns)].question, font_style)
-
+    for col_num in range(len(columns), len(ques) + len(columns)):
+        ws.write(row_num, col_num, ques[col_num - len(columns)].question, font_style)
+    ws.write(row_num, len(columns) + len(ques), 'Score', font_style)
     row_num += 1
+    style = xlwt.easyxf('pattern: pattern solid, fore_colour custom_colour; font: bold on')
     for i in range(len(responses)):
         for j in range(len(responses[i])):
             ws.write(row_num, j, responses[i][j], font_style)
+        score = 0
         for k in range(len(ques)):
             res = QuestionResponse.objects.filter(question=ques[k], quiz_response__student=responses[i][-1]).first()
-            ws.write(row_num, k+len(responses[0]), res.que_response, font_style)
+            if res.que_response.upper() == ques[k].correct_ans.upper():
+                ws.write(row_num, k + len(responses[0]), res.que_response, font_style)
+                score += 1
+            else:
+                font_style.font.colour_index = 0
+                ws.write(row_num, k + len(responses[0]), res.que_response, style)
+        ws.write(row_num, len(columns) + len(ques), f'{score}/{len(ques)}', font_style)
         row_num += 1
     wb.save(response)
     return response

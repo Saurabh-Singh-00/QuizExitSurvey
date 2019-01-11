@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block title %}
+    <title>{{ survey_response.survey.title }}</title>
+{% endblock %}
 {% block content %}
     <div class="xyz">
         {% if survey_response and survey_response.student == user.student %}
@@ -8,6 +11,9 @@
                 <p>{{ response.squestion.squestion }}:&nbsp; {{ response.que_response }}/5</p>
                 <hr>
             {% endfor %}
+            {% if survey_response.feedback %}
+                <p>Feedback: {{ survey_response.feedback }}</p>
+            {% endif %}
             <a class="btn btn-success" href="{% url 'download-survey-response' survey_response.pk %}">Download this survey</a>
         {% else %}
             <h1>Sorry, we couldn't find your response to this survey</h1>

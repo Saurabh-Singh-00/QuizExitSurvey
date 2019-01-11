@@ -91,7 +91,6 @@ def generate_pdf(request, pk):
     return response
 
 
-
 @teacher_required
 @login_required
 def add_survey(request, pk=None):
@@ -186,7 +185,7 @@ def view_survey(request, pk):
 @method_decorator([login_required, teacher_required], name='dispatch')
 class SurveyDeleteView(UserPassesTestMixin, DeleteView):
     model = Survey
-    template_name = 'quiz/quiz_confirm_delete.html'
+    template_name = 'survey/survey_confirm_delete.html'
 
     def test_func(self):
         survey = self.get_object()
@@ -201,7 +200,7 @@ class SurveyDeleteView(UserPassesTestMixin, DeleteView):
 
 @method_decorator([login_required, teacher_required], name='dispatch')
 class SurveyUpdateView(UpdateView):
-    template_name = 'quiz/change_status.html'
+    template_name = 'survey/change_status_survey.html'
     model = Survey
     fields = ['title', 'is_open']
 

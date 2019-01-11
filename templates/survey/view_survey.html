@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
+{% block title %}
+    <title>Survey: {{ survey.title }}</title>
+{% endblock %}
 {% block content %}
     <div class="container">
         <legend>
-            {{ quiz.title }}
+            {{ survey.title }}
             <span class="float-right">
-            {% if quiz.is_open and quiz.author == user.teacher %}
-                <a class="btn btn-success" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Open </a>
-            {% elif quiz.author == user.teacher %}
-                <a class="btn btn-secondary" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Closed </a>
+            {% if survey.is_open and survey.author == user.teacher %}
+                <a class="btn btn-success" href="{% url 'update-survey' survey.pk %}"> Survey Status: Open </a>
+            {% elif survey.author == user.teacher %}
+                <a class="btn btn-secondary" href="{% url 'update-survey' survey.pk %}"> Suiz Status: Closed </a>
             {% endif %}
         </span><br>
             <small>

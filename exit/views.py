@@ -171,14 +171,33 @@ def view_survey(request, pk):
         batches += str(batch) + ", "
     batches = batches[:-2]
     questions = SQuestion.objects.filter(survey=survey)
-    # responses = QuizResponse.objects.filter(survey=survey).exists()
+    responses = SurveyResponse.objects.filter(survey=survey).exists()
     user = request.user.teacher
+    no_responses = []
+    if responses:
+        for question in questions:
+            chosen = [0, 0, 0, 0, 0]
+            q_responses = SQuestionResponse.objects.filter(squestion=question)
+            for q_response in q_responses:
+                if q_response.que_response == "1":
+                    chosen[0] += 1
+                elif q_response.que_response == "2":
+                    chosen[1] += 1
+                elif q_response.que_response == "3":
+                    chosen[2] += 1
+                elif q_response.que_response == "4":
+                    chosen[3] += 1
+                else:
+                    chosen[4] += 1
+            no_responses.append(chosen)
+        print(no_responses)
     context = {
         'questions': questions,
         'survey': survey,
         'author': user,
         'batches': batches,
-        # 'responses': responses
+        'responses': responses,
+        'no_responses': no_responses
     }
     return render(request, 'survey/view_survey.html', context)
 
@@ -211,3 +230,57 @@ class SurveyUpdateView(UpdateView):
     def get_success_url(self):
         survey = self.get_object()
         return reverse_lazy('view-quiz', kwargs={'pk': survey.pk})
+
+
+
+
+
+
+@login_required
+@teacher_required
+def generate_excel(request, pk):
+    import xlwt
+    survey = get_object_or_404(Survey, pk=pk)
+    ques = SQuestion.objects.filter(survey=survey)
+    responses = SurveyResponse.objects.values_list(
+        'student__roll_no',
+        'student__student__first_name',
+        'student__student__last_name',
+        'student__batch__division',
+        'student'
+    ).filter(survey=survey).order_by('student__roll_no')
+    response = HttpResponse(content_type='application/ms-excel')
+    file_name = 'Survey ' + '-'.join([str(x) for x in survey.batches.all()])
+    print(file_name)
+    response['Content-Disposition'] = f'attachment; filename="{file_name}.xls"'
+    print(responses)
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet(f'{survey.title}')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Roll No', 'First name', 'Last name', 'Division', 'Student']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    for col_num in range(len(columns), len(ques)+len(columns)):
+        ws.write(row_num, col_num, ques[col_num-len(columns)].squestion, font_style)
+    ws.write(row_num, len(columns)+len(ques), 'Feedback', font_style)
+    row_num += 1
+    for i in range(len(responses)):
+        for j in range(len(responses[i])):
+            ws.write(row_num, j, responses[i][j], font_style)
+        for k in range(len(ques)):
+            res = SQuestionResponse.objects.filter(squestion=ques[k], survey_response__student=responses[i][-1]).first()
+            ws.write(row_num, k+len(responses[0]), res.que_response, font_style)
+        feedback = SurveyResponse.objects.filter(survey=survey, student=responses[i][-1]).values('feedback').first()
+        ws.write(row_num, len(columns)+len(ques), feedback['feedback'], font_style)
+        row_num += 1
+    wb.save(response)
+    return response
+    # return HttpResponse("<h2>Download Excel</h2>")

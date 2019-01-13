@@ -183,22 +183,23 @@ def view_quiz(request, pk):
         batches += str(batch) + ", "
     batches = batches[:-2]
     questions = Question.objects.filter(quiz=quiz)
-    no_responses = []
-    for question in questions:
-        chosen = [0, 0, 0, 0]
-        q_responses = QuestionResponse.objects.filter(question=question)
-        for q_response in q_responses:
-            if q_response.que_response == "a":
-                chosen[0] += 1
-            elif q_response.que_response == "b":
-                chosen[1] += 1
-            elif q_response.que_response == "c":
-                chosen[2] += 1
-            else:
-                chosen[3] += 1
-        no_responses.append(chosen)
-    print(no_responses)
     responses = QuizResponse.objects.filter(quiz=quiz).exists()
+    no_responses = []
+    if responses:
+        for question in questions:
+            chosen = [0, 0, 0, 0]
+            q_responses = QuestionResponse.objects.filter(question=question)
+            for q_response in q_responses:
+                if q_response.que_response == "a":
+                    chosen[0] += 1
+                elif q_response.que_response == "b":
+                    chosen[1] += 1
+                elif q_response.que_response == "c":
+                    chosen[2] += 1
+                else:
+                    chosen[3] += 1
+            no_responses.append(chosen)
+        print(no_responses)
     user = request.user.teacher
     context = {
         'questions': questions,
@@ -282,6 +283,7 @@ def generate_excel(request, pk):
         ws.write(row_num, col_num, ques[col_num-len(columns)].question, font_style)
 
     row_num += 1
+    res_per_ques = []
     for i in range(len(responses)):
         for j in range(len(responses[i])):
             ws.write(row_num, j, responses[i][j], font_style)

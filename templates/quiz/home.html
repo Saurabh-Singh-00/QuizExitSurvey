@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% block content %}
     {% for quiz in quizzes %}
         <a class="article-title" href="{% url 'create-quiz' quiz.id %}">{{ quiz.title }} - {{ quiz.author }}</a><br>

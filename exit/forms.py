@@ -43,7 +43,7 @@ class SQuestionForm(forms.Form):
     squestion = forms.CharField(max_length=500, widget=forms.Textarea(attrs={
         'class': 'form-control',
         'placeholder': 'Enter question here.'
-    }))
+    }), label="Question")
 
 
 SQuestionFormSet = forms.formset_factory(SQuestionForm, min_num=1, extra=0)
@@ -66,4 +66,4 @@ class TakeSurveyForm(forms.ModelForm):
                 widget=forms.RadioSelect, label=str(ques_no) + ") " + squestion.squestion, required=True)
             self.fields['question_no_%d' % ques_no] = field
             ques_no += 1
-        self.fields['survey_feedback'] = forms.CharField(max_length=500, widget=forms.Textarea())
+        self.fields['survey_feedback'] = forms.CharField(max_length=500, widget=forms.Textarea(), label="Suggestions: ")

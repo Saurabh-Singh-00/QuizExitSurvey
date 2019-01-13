@@ -1,4 +1,4 @@
-{% load static  %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,11 +25,12 @@
             font-size: 180%;
         }
 
-        div.c{
+        div.c {
             font-size: 150%;
         }
 
     </style>
+    <title>Download Response</title>
 </head>
 <body>
 {% block content %}
@@ -38,17 +39,20 @@
 
         <h5 style="font-size: 200%">{{ survey_response.survey.title }} - {{ survey_response.survey.subject.name }}</h5>
     </div>
-    <div class="b" >
+    <div class="b">
         Name: &nbsp;{{ survey_response.student.student.first_name }} {{ survey_response.student.student.last_name }}<br>
         Batch: &nbsp;{{ survey_response.student.batch }}<br>
         Roll Number: &nbsp;{{ survey_response.student.roll_no }}<br>
-    <hr>
+        <hr>
     </div>
     <div class="c">
         {% for response in ques_responses %}
             <p>{{ response.squestion.squestion }} :&nbsp; {{ response.que_response.capitalize }}/5</p>
             <hr>
         {% endfor %}
+        {% if survey_response.feedback %}
+            <p>Feedback: {{ survey_response.feedback }}</p>
+        {% endif %}
     </div>
     <br>
     <br>

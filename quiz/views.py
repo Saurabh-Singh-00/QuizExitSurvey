@@ -283,14 +283,18 @@ def generate_excel(request, pk):
         ws.write(row_num, col_num, ques[col_num-len(columns)].question, font_style)
 
     row_num += 1
-    res_per_ques = []
+    res_per_ques = [0 for x in range(len(ques))]
     for i in range(len(responses)):
         for j in range(len(responses[i])):
             ws.write(row_num, j, responses[i][j], font_style)
         for k in range(len(ques)):
             res = QuestionResponse.objects.filter(question=ques[k], quiz_response__student=responses[i][-1]).first()
             ws.write(row_num, k+len(responses[0]), res.que_response, font_style)
+            if res.que_response.upper() == ques[k].correct_ans.upper():
+                res_per_ques[k] += 1
         row_num += 1
+    for i in range(len(ques)):
+        ws.write(row_num, len(columns)+i, res_per_ques[i], font_style)
     wb.save(response)
     return response
     # return HttpResponse("<h2>Download Excel</h2>")

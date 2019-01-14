@@ -10,7 +10,7 @@
             {% if survey.is_open and survey.author == user.teacher %}
                 <a class="btn btn-success" href="{% url 'update-survey' survey.pk %}"> Survey Status: Open </a>
             {% elif survey.author == user.teacher %}
-                <a class="btn btn-secondary" href="{% url 'update-survey' survey.pk %}"> Suiz Status: Closed </a>
+                <a class="btn btn-dark" href="{% url 'update-survey' survey.pk %}"> Survey Status: Closed </a>
             {% endif %}
         </span><br>
             <small>
@@ -19,6 +19,9 @@
             <br>
             <small>
                 Currently assigned to: {{ batches }}
+                {% if survey.author == user.teacher %}
+                <a class="btn btn-secondary" href="{% url 'view-survey-stats' survey.pk %}">Details</a>
+                {% endif %}
             </small>
         </legend>
         <hr>

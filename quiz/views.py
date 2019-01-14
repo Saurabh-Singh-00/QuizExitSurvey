@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import get_template
 from django.urls import reverse_lazy
@@ -13,7 +13,7 @@ from .models import Quiz, Question, QuizResponse, QuestionResponse
 from django.views.generic import UpdateView, DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from .forms import QuestionFormSet, QuizForm, TakeQuizForm
-from users.models import Batch
+from users.models import Batch, Student
 
 
 @login_required
@@ -26,7 +26,8 @@ def attempt_quiz(request, pk):
     if QuizResponse.objects.filter(quiz=quiz, student=student).exists():
         quiz_response = QuizResponse.objects.filter(quiz=quiz, student=student).first()
         return redirect('view-response', pk=quiz_response.pk)
-
+    elif request.user.student.batch not in quiz.batches.all():
+        return HttpResponseForbidden("<h1>You're not supposed to be here!</h1>")
     elif quiz.is_open:
         if request.method == 'POST':
             form = TakeQuizForm(data=request.POST, quiz=quiz)
@@ -209,6 +210,28 @@ def view_quiz(request, pk):
         'no_of_responses': no_responses,
     }
     return render(request, 'quiz/view_quiz.html', context)
+
+
+@login_required
+@teacher_required
+def view_quiz_stats(request, pk):
+    quiz = get_object_or_404(Quiz, pk=pk)
+    batch_queryset = Batch.objects.filter(quiz=quiz)
+    batches = []
+    for batch in batch_queryset:
+        no_res = str(batch) + ": "
+        stu_list = Student.objects.filter(batch=batch)
+        print(stu_list)
+        for student in stu_list:
+            s = QuizResponse.objects.filter(student=student, quiz=quiz).first()
+            if s is None:
+                no_res += str(student.roll_no) + ", "
+        batches.append(no_res[:-2])
+    context = {
+        'batches': batches
+    }
+    return render(request, 'survey/view_survey_stats.html', context)
+
 
 
 @method_decorator([login_required, teacher_required], name='dispatch')

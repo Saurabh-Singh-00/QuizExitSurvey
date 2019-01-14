@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block title %}
+    <title>Quiz Home</title>
+{% endblock %}
+{% block content %}
+    {% if user.is_authenticated and user.is_teacher %}
+        <div class="container mt-2 mb-2">
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 bhoechie-tab-menu">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item active text-center mb-2">
+                            My Surveys
+                        </a>
+                        <a href="#" class="list-group-item text-center mb-2">
+                            All Surveys
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 bhoechie-tab">
+                    <div class="bhoechie-tab-content active">
+                        <legend class="mt-4 mb-2">
+                            My Surveys
+                            <span class="float-right">
+                                    <a href="{% url 'add-survey' %}" class="btn btn-info">Add new Survey</a>
+                                </span>
+                        </legend>
+                        <hr>
+                        {% for subject in view.get_my_subject_list %}
+                            <h4>{{ subject }}</h4>
+                            {% for survey in surveys %}
+                                {% if survey.author == user.teacher %}
+                                    {% if subject == survey.subject.name %}
+                                        {% if user.is_teacher %}
+                                            <a href='{% url 'view-survey' survey.pk %}'>  {{ survey.title }} -
+                                                Prof. {{ survey.author.teacher.first_name }} {{ survey.author.teacher.last_name }}  </a>
+                                        {% endif %}
+                                        <hr>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                    <div class="bhoechie-tab-content">
+                        {% if surveys %}
+                            <legend class="mt-4 mb-2">
+                                All Surveys
+                            </legend>
+                            <hr>
+                            {% for subject in view.get_subject_list %}
+                                <h4>{{ subject }}</h4>
+                                {% for survey in surveys %}
+                                    {% if subject == survey.subject.name %}
+                                        {% if user.is_teacher %}
+                                            <a href='{% url 'view-survey' survey.pk %}'>  {{ survey.title }} -
+                                                Prof. {{ survey.author.teacher.first_name }} {{ survey.author.teacher.last_name }}  </a>
+                                        {% endif %}
+                                        <hr>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% elif user.is_authenticated and not user.is_teacher %}
+        {% if surveys %}
+            <div class="container mt-2 mb-2">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 bhoechie-tab-menu">
+                        <div class="list-group">
+                            <a href="#" class="list-group-item active text-center mb-2">
+                                Open Surveys
+                            </a>
+                            <a href="#" class="list-group-item text-center mb-2">
+                                Closed Surveys
+                            </a>
+                            <a href="#" class="list-group-item text-center mb-2">
+                                All Surveys
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 bhoechie-tab">
+                        <div class="bhoechie-tab-content active">
+                            <legend class="mt-4 mb-2">
+                                Open Surveys
+                            </legend>
+                            <hr>
+                            {% for subject in view.get_subject_with_open_quiz_list %}
+                                <h4>{{ subject }}</h4>
+                                {% for survey in surveys %}
+                                    {% if subject == survey.subject.name %}
+                                        {% if survey.is_open %}
+                                            <a href='{% url 'attempt-survey' survey.pk %}'>  {{ survey.title }} -
+                                                Prof. {{ survey.author.teacher.first_name }} {{ survey.author.teacher.last_name }}</a>
+                                            <hr>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                        <div class="bhoechie-tab-content">
+                            <legend class="mt-4 mb-2">
+                                Closed Surveys
+                            </legend>
+                            <hr>
+                            {% for subject in view.get_subject_with_close_quiz_list %}
+                                <h4>{{ subject }}</h4>
+                                {% for survey in surveys %}
+                                    {% if subject == survey.subject.name %}
+                                        {% if not survey.is_open %}
+                                            <a href='{% url 'attempt-survey' survey.pk %}'>  {{ survey.title }} -
+                                                Prof. {{ survey.author.teacher.first_name }} {{ survey.author.teacher.last_name }}</a>
+                                            <hr>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                        <div class="bhoechie-tab-content">
+                            {% if surveys %}
+                                <legend class="mt-4 mb-2">
+                                    All Surveys
+                                </legend>
+                                <hr>
+                                {% for subject in view.get_subject_list %}
+                                    <h4>{{ subject }}</h4>
+                                    {% for survey in surveys %}
+                                        {% if subject == survey.subject.name %}
+                                            <a href='{% url 'attempt-survey' survey.pk %}'>  {{ survey.title }} -
+                                                Prof. {{ survey.author.teacher.first_name }} {{ survey.author.teacher.last_name }}</a>
+                                            {% if survey.is_open %}
+                                                <span class="align-right">
+                                                    Open
+                                                </span>
+                                            {% else %}
+                                                <span class="align-right">
+                                                    Closed
+                                                </span>
+                                            {% endif %}
+                                            <hr>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <legend class="mt-4 mb-2">
+                You haven't been assigned any surveys yet! Rejoice :)
+            </legend>
+        {% endif %}
+    {% endif %}
+{% endblock content %}

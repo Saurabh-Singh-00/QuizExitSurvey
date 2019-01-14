@@ -12,7 +12,7 @@
             {% if quiz.is_open and quiz.author == user.teacher %}
                 <a class="btn btn-success" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Open </a>
             {% elif quiz.author == user.teacher %}
-                <a class="btn btn-secondary" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Closed </a>
+                <a class="btn btn-dark" href="{% url 'update-quiz' quiz.pk %}"> Quiz Status: Closed </a>
             {% endif %}
         </span><br>
             <small>
@@ -21,7 +21,10 @@
             <br>
             <small>
                 Currently assigned to: {{ batches }}
+                {% if quiz.author == user.teacher %}
+                    <a class="btn btn-secondary" href="{% url 'view-quiz-stats' quiz.pk %}">Details</a>
                 <a href="{% url 'generate-excel' quiz.pk %}"><i class="fas fa-file-download mr-2 ml-4"></i>Download Excel</a>
+                {% endif %}
             </small>
         </legend>
         <hr>

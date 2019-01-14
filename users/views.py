@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import *
 from django.views.generic.base import View, ContextMixin
 from Quizzes_Surveys.decorators import student_required, teacher_required
+from exit.models import Survey
 from quiz.models import Quiz
 from users.models import User, Student, Subject, Teacher, Batch
 from .forms import StudentRegisterForm, TeacherRegisterForm, TeacherUpdateForm, StudentUpdateForm
@@ -120,8 +121,81 @@ class TeacherSubjectListView(UserPassesTestMixin, ListView):
         return self.kwargs['pk'] == self.request.user.pk
 
 
-class LoginView(View):
+@method_decorator([login_required, student_required], name='dispatch')
+class StudentExitListView(UserPassesTestMixin, ListView, ContextMixin):
+    template_name = 'users/survey_list.html'
+    context_object_name = 'surveys'
 
+    def get_queryset(self):
+        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
+        exit_set = Survey.objects.filter(batches__student=self.user.student).order_by('subject__name')
+        return exit_set
+
+    def get_subject_list(self):
+        subject_list = []
+        for survey in Survey.objects.filter(batches__student=self.user.student).order_by('subject__name'):
+            subject = survey.subject.name
+            if subject not in subject_list:
+                subject_list.append(subject)
+        return subject_list
+
+    def get_subject_with_open_quiz_list(self):
+        subject_list = []
+        for survey in Survey.objects.filter(batches__student=self.user.student).order_by('subject__name'):
+            if survey.is_open:
+                subject = survey.subject.name
+                if subject not in subject_list:
+                    subject_list.append(subject)
+        return subject_list
+
+    def get_subject_with_close_quiz_list(self):
+        subject_list = []
+        for survey in Survey.objects.filter(batches__student=self.user.student).order_by('subject__name'):
+            if not survey.is_open:
+                subject = survey.subject.name
+                if subject not in subject_list:
+                    subject_list.append(subject)
+        return subject_list
+
+    def test_func(self):
+        return self.kwargs['pk'] == self.request.user.pk
+
+
+@method_decorator([login_required, teacher_required], name='dispatch')
+class TeacherSurveyListView(UserPassesTestMixin, ListView):
+    template_name = 'users/survey_list.html'
+    context_object_name = 'surveys'
+
+    def get_queryset(self):
+        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
+        subjects = self.user.teacher.subjects.all()
+        exit_set = Survey.objects.filter(subject__in=subjects).order_by('subject__name')
+        return exit_set
+
+    def get_subject_list(self):
+        subject_list = []
+        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
+        subjects = self.user.teacher.subjects.all()
+        for survey in Survey.objects.filter(subject__in=subjects).order_by('subject__name'):
+            subject = survey.subject.name
+            if subject not in subject_list:
+                subject_list.append(subject)
+        subject_list.sort()
+        return subject_list
+
+    def get_my_subject_list(self):
+        subject_list = []
+        for survey in Survey.objects.filter(author=self.user.teacher).order_by('subject__name'):
+            subject = survey.subject.name
+            if subject not in subject_list:
+                subject_list.append(subject)
+        return subject_list
+
+    def test_func(self):
+        return self.kwargs['pk'] == self.request.user.pk
+
+
+class LoginView(View):
     def get(self, request):
         if self.request.user.is_authenticated:
             if self.request.user.is_teacher:

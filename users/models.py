@@ -16,7 +16,7 @@ class Student(models.Model):
     batch = models.ForeignKey('users.Batch', on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"{self.student.first_name.capitalize()}"
+        return f"{self.student.first_name.capitalize() + ' ' + self.student.last_name.capitalize()}"
 
 
 class Subject(models.Model):
@@ -33,7 +33,7 @@ class Teacher(models.Model):
     batches = models.ManyToManyField('users.Batch')
 
     def __str__(self):
-        return f"Prof. {self.teacher.first_name.capitalize() + ' ' +self.teacher.last_name.capitalize()}"
+        return f"Prof. {self.teacher.first_name.capitalize() + ' ' + self.teacher.last_name.capitalize()}"
 
 
 class Batch(models.Model):

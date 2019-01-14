@@ -1,9 +1,6 @@
 from django import forms
-from django.contrib import messages
-from django.core.exceptions import ValidationError
-
 from quiz.models import Quiz, Question, QuizResponse
-from users.models import Teacher, Batch, Subject
+from users.models import Batch, Subject
 
 
 class QuestionForm(forms.Form):
@@ -81,4 +78,5 @@ class TakeQuizForm(forms.ModelForm):
             self.fields['question_no_%d' % ques_no] = field
             ques_no += 1
 
-
+    def is_valid(self):
+        valid = super(QuizForm, self).is_valid()

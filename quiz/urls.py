@@ -7,6 +7,7 @@ urlpatterns = [
     path('add/', views.add_quiz, name='add-quiz'),
     path('<int:pk>/add/', views.add_quiz, name='add-quiz'),
     path('<int:pk>/view/', views.view_quiz, name='view-quiz'),
+    path('<int:pk>/view/stats', views.view_quiz_stats, name='view-quiz-stats'),
     path('<int:pk>/view/response/', views.view_response, name='view-response'),
     path('<int:pk>/view/response/download/', views.generate_pdf, name='download-response'),
     path('<int:opk>/<int:npk>/edit/', views.edit_quiz, name='edit-quiz'),

@@ -2,19 +2,18 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db import transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import get_template
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView, UpdateView
 from xhtml2pdf import pisa
-
 from Quizzes_Surveys.decorators import teacher_required, student_required
 from Quizzes_Surveys.utils import link_callback
 from exit.forms import SurveyForm, SQuestionFormSet, TakeSurveyForm
 from exit.models import Survey, SQuestion, SurveyResponse, SQuestionResponse
-from users.models import Batch
+from users.models import Batch, Student
 
 
 @login_required
@@ -22,12 +21,12 @@ from users.models import Batch
 def attempt_survey(request, pk):
     survey = get_object_or_404(Survey, pk=pk)
     squestions = SQuestion.objects.filter(survey=survey)
-    student = request.user.student
-
+    student = request.user.studen
     if SurveyResponse.objects.filter(survey=survey, student=student).exists():
         survey_response = SurveyResponse.objects.filter(survey=survey, student=student).first()
         return redirect('view-survey-response', pk=survey_response.pk)
-
+    elif request.user.student.batch not in survey.batches.all():
+        return HttpResponseForbidden("You're not supposed to be here!")
     elif survey.is_open:
         if request.method == 'POST':
             form = TakeSurveyForm(data=request.POST, survey=survey)
@@ -170,16 +169,37 @@ def view_survey(request, pk):
         batches += str(batch) + ", "
     batches = batches[:-2]
     questions = SQuestion.objects.filter(survey=survey)
-    # responses = QuizResponse.objects.filter(survey=survey).exists()
+    responses = SurveyResponse.objects.filter(survey=survey).exists()
     user = request.user.teacher
     context = {
         'questions': questions,
         'survey': survey,
         'author': user,
         'batches': batches,
-        # 'responses': responses
+        'responses': responses
     }
     return render(request, 'survey/view_survey.html', context)
+
+
+@login_required
+@teacher_required
+def view_survey_stats(request, pk):
+    survey = get_object_or_404(Survey, pk=pk)
+    batch_queryset = Batch.objects.filter(survey=survey)
+    batches = []
+    for batch in batch_queryset:
+        no_res = str(batch) + ": "
+        stu_list = Student.objects.filter(batch=batch)
+        print(stu_list)
+        for student in stu_list:
+            s = SurveyResponse.objects.filter(student=student, survey=survey).first()
+            if s is None:
+                no_res += str(student.roll_no) + ", "
+        batches.append(no_res[:-2])
+    context = {
+        'batches': batches
+    }
+    return render(request, 'survey/view_survey_stats.html', context)
 
 
 @method_decorator([login_required, teacher_required], name='dispatch')
@@ -209,4 +229,4 @@ class SurveyUpdateView(UpdateView):
 
     def get_success_url(self):
         survey = self.get_object()
-        return reverse_lazy('view-quiz', kwargs={'pk': survey.pk})
+        return reverse_lazy('view-survey', kwargs={'pk': survey.pk})

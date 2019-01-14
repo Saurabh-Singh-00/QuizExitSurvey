@@ -19,11 +19,11 @@
 
     {% block title %}
         {% if title %}
-        <title>{{ title }}</title>
-    {% else %}
-        <title>Home</title>
-    {% endif %}
-    {% endblock title%}
+            <title>{{ title }}</title>
+        {% else %}
+            <title>Home</title>
+        {% endif %}
+    {% endblock title %}
 
 </head>
 <style>
@@ -127,16 +127,26 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
+            <li class="nav-item">
 
                 {% if user.is_authenticated and user.is_teacher %}
-                    <a class="nav-link" href="{% url 'teacher-home' user.pk %}">Home <span
+                    <a class="nav-link" href="{% url 'teacher-home' user.pk %}">Quiz<span
                             class="sr-only">(current)</span></a>
                 {% elif user.is_authenticated and not user.is_teacher %}
-                    <a class="nav-link" href="{% url 'student-home' user.pk %}">Home <span
+                    <a class="nav-link" href="{% url 'student-home' user.pk %}">Quiz <span
                             class="sr-only">(current)</span></a>
                 {% endif %}
             </li>
+            <li class="nav-item ">
+                {% if user.is_authenticated and user.is_teacher %}
+                    <a class="nav-link" href="{% url 'teacher-survey' user.pk %}">Survey<span
+                            class="sr-only">(current)</span></a>
+                {% elif user.is_authenticated and not user.is_teacher %}
+                    <a class="nav-link" href="{% url 'student-survey' user.pk %}">Survey<span
+                            class="sr-only">(current)</span></a>
+                {% endif %}
+            </li>
+
             <li class="nav-item">
                 <a class="nav-link disabled" href="#">About Us</a>
             </li>
@@ -151,9 +161,13 @@
                         <a href="{% url 'teacher-profile' user.pk %}" class="nav-link">
                             Welcome, Prof. {{ user.first_name.capitalize }}
                         </a>
-                    {% elif user.is_authenticated and not user.is_teacher%}
+                    {% elif user.is_authenticated and not user.is_teacher %}
                         <a href="{% url 'student-profile' user.pk %}" class="nav-link">
-                            Hello! {{ user.first_name.capitalize }}
+                        {% if user.first_name == "Vivek" and user.last_name == "Singh" %}
+                            Pranam Prabhu
+                        {% else %}
+                            Hello! {{ user.first_name }}
+                        {% endif %}
                         </a>
                     {% endif %}
                 </li>

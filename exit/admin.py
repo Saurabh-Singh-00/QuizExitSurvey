@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Survey, SQuestion,SurveyResponse, SQuestionResponse
+from .models import Survey, SQuestion, SurveyResponse, SQuestionResponse
 
 
 admin.site.register(Survey)

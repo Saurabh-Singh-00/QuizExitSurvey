@@ -13,6 +13,7 @@ def link_callback(uri, rel):
         path = os.path.join(mRoot, uri.replace(mUrl, ""))
     elif uri.startswith(sUrl):
         path = os.path.join(sRoot, uri.replace(sUrl, ""))
+
     # make sure that file exists
     if not os.path.isfile(path):
         raise Exception('media URI must start with %s or %s' % (sUrl, mUrl))

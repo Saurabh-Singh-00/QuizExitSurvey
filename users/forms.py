@@ -1,5 +1,5 @@
 from django import forms
-from .models import User, Teacher, Student
+from .models import Student
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -90,7 +90,7 @@ class StudentRegisterForm(UserCreationForm):
         user.is_teacher = False
         if commit:
             user.save()
-            student = Student.objects.create(student=user, batch=self.cleaned_data.get('batch'),
+            Student.objects.create(student=user, batch=self.cleaned_data.get('batch'),
                                              roll_no=self.cleaned_data.get('roll_no'))
         return user
 

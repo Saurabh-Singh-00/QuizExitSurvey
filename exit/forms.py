@@ -12,7 +12,7 @@ class SurveyForm(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         try:
-            hide_condition = kwargs.pop('hide_condition')
+            kwargs.pop('hide_condition')
             super(SurveyForm, self).__init__(*args, **kwargs)
             self.fields['subject'] = forms.ModelChoiceField(queryset=user.teacher.teacher.subjects,
                                                             required=True, widget=forms.HiddenInput())

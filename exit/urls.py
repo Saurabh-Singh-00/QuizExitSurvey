@@ -13,4 +13,5 @@ urlpatterns = [
     path('<int:opk>/<int:npk>/edit/', views.edit_survey, name='edit-survey'),
     path('<int:pk>/delete/', views.SurveyDeleteView.as_view(), name='delete-survey'),
     path('<int:pk>/update/', views.SurveyUpdateView.as_view(), name='update-survey'),
+    path('<int:pk>/download/', views.generate_excel, name='download-excel')
 ]

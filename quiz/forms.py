@@ -33,7 +33,7 @@ class QuizForm(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         try:
-            hide_condition = kwargs.pop('hide_condition')
+            kwargs.pop('hide_condition')
             super(QuizForm, self).__init__(*args, **kwargs)
             self.fields['subject'] = forms.ModelChoiceField(queryset=user.teacher.teacher.subjects,
                                                             required=True, widget=forms.HiddenInput())
@@ -77,6 +77,3 @@ class TakeQuizForm(forms.ModelForm):
                 widget=forms.RadioSelect, label=str(ques_no) + ") " + question.question, required=True)
             self.fields['question_no_%d' % ques_no] = field
             ques_no += 1
-
-    def is_valid(self):
-        valid = super(QuizForm, self).is_valid()

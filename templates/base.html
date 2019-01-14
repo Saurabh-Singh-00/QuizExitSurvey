@@ -130,20 +130,16 @@
             <li class="nav-item">
 
                 {% if user.is_authenticated and user.is_teacher %}
-                    <a class="nav-link" href="{% url 'teacher-home' user.pk %}">Quiz<span
-                            class="sr-only">(current)</span></a>
+                    <a id="quiz-tag" class="nav-link" href="{% url 'teacher-home' user.pk %}">Quiz </a>
                 {% elif user.is_authenticated and not user.is_teacher %}
-                    <a class="nav-link" href="{% url 'student-home' user.pk %}">Quiz <span
-                            class="sr-only">(current)</span></a>
+                    <a id="quiz-tag" class="nav-link" href="{% url 'student-home' user.pk %}">Quiz </a>
                 {% endif %}
             </li>
             <li class="nav-item ">
                 {% if user.is_authenticated and user.is_teacher %}
-                    <a class="nav-link" href="{% url 'teacher-survey' user.pk %}">Survey<span
-                            class="sr-only">(current)</span></a>
+                    <a id="survey-tag" class="nav-link" href="{% url 'teacher-survey' user.pk %}">Survey </a>
                 {% elif user.is_authenticated and not user.is_teacher %}
-                    <a class="nav-link" href="{% url 'student-survey' user.pk %}">Survey<span
-                            class="sr-only">(current)</span></a>
+                    <a id="survey-tag" class="nav-link" href="{% url 'student-survey' user.pk %}">Survey </a>
                 {% endif %}
             </li>
 
@@ -206,6 +202,14 @@
             $("div.bhoechie-tab>div.bhoechie-tab-content").eq(index).addClass("active");
         });
     });
+</script>
+<script>
+    let wUrl = window.location.href.toString();
+    if (wUrl.includes('home') || wUrl.includes('quiz')) {
+        document.getElementById('quiz-tag').classList.add('active');
+    }else if (wUrl.includes('survey') || wUrl.includes('exit')) {
+        document.getElementById('survey-tag').classList.add('active');
+    }
 </script>
 {% block scripts %}{% endblock %}
 

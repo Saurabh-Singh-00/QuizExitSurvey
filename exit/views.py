@@ -171,6 +171,7 @@ def view_survey(request, pk):
     questions = SQuestion.objects.filter(survey=survey)
     responses = SurveyResponse.objects.filter(survey=survey).exists()
     user = request.user.teacher
+    no_responses = []
     if responses:
         for question in questions:
             chosen = [0, 0, 0, 0, 0]
@@ -186,11 +187,14 @@ def view_survey(request, pk):
                     chosen[3] += 1
                 else:
                     chosen[4] += 1
+            no_responses.append(chosen)
     context = {
         'questions': questions,
         'survey': survey,
         'author': user,
         'batches': batches,
+        'responses': responses,
+        'no_responses': no_responses
     }
     return render(request, 'survey/view_survey.html', context)
 
@@ -275,21 +279,24 @@ def generate_excel(request, pk):
 
     columns = ['Roll No', 'First name', 'Last name', 'Division', 'Student']
 
-    for col_num in range(len(columns)):
+    col_length = len(columns) - 1
+    ques_length = len(ques)
+
+    for col_num in range(col_length):
         ws.write(row_num, col_num, columns[col_num], font_style)
 
-    for col_num in range(len(columns), len(ques)+len(columns)):
-        ws.write(row_num, col_num, ques[col_num-len(columns)].squestion, font_style)
-    ws.write(row_num, len(columns)+len(ques), 'Feedback', font_style)
+    for col_num in range(col_length, col_length+ques_length):
+        ws.write(row_num, col_num, ques[col_num-col_length].squestion, font_style)
+    ws.write(row_num, col_length + ques_length, 'Feedback', font_style)
     row_num += 1
     for i in range(len(responses)):
-        for j in range(len(responses[i])):
+        for j in range(col_length):
             ws.write(row_num, j, responses[i][j], font_style)
-        for k in range(len(ques)):
+        for k in range(ques_length):
             res = SQuestionResponse.objects.filter(squestion=ques[k], survey_response__student=responses[i][-1]).first()
-            ws.write(row_num, k+len(responses[0]), res.que_response, font_style)
+            ws.write(row_num, k+col_length, res.que_response, font_style)
         feedback = SurveyResponse.objects.filter(survey=survey, student=responses[i][-1]).values('feedback').first()
-        ws.write(row_num, len(columns)+len(ques), feedback['feedback'], font_style)
+        ws.write(row_num, col_length + ques_length, feedback['feedback'], font_style)
         row_num += 1
     wb.save(response)
     return response

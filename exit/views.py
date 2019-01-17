@@ -285,18 +285,31 @@ def generate_excel(request, pk):
     for col_num in range(col_length):
         ws.write(row_num, col_num, columns[col_num], font_style)
 
-    for col_num in range(col_length, col_length+ques_length):
-        ws.write(row_num, col_num, ques[col_num-col_length].squestion, font_style)
+    for col_num in range(col_length, col_length + ques_length):
+        ws.write(row_num, col_num, ques[col_num - col_length].squestion, font_style)
     ws.write(row_num, col_length + ques_length, 'Feedback', font_style)
     row_num += 1
+    y_ = [[0, 0, 0, 0, 0] for x in range(ques_length)]
     for i in range(len(responses)):
         for j in range(col_length):
             ws.write(row_num, j, responses[i][j], font_style)
         for k in range(ques_length):
             res = SQuestionResponse.objects.filter(squestion=ques[k], survey_response__student=responses[i][-1]).first()
-            ws.write(row_num, k+col_length, res.que_response, font_style)
+            ws.write(row_num, k + col_length, res.que_response, font_style)
+            y_[k][int(res.que_response)-1] += 1
         feedback = SurveyResponse.objects.filter(survey=survey, student=responses[i][-1]).values('feedback').first()
         ws.write(row_num, col_length + ques_length, feedback['feedback'], font_style)
+        row_num += 1
+    row_num += 5
+    ws.write(row_num, 0, 'Question', font_style)
+    for i in range(1, 6):
+        ws.write(row_num, i, f'{i}', font_style)
+    row_num += 1
+    print(y_)
+    for i in range(ques_length):
+        ws.write(row_num, 0, ques[i].squestion, font_style)
+        for j in range(1, 6):
+            ws.write(row_num, j, f'{y_[i][j-1]}', font_style)
         row_num += 1
     wb.save(response)
     return response

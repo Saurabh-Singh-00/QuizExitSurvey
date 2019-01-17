@@ -298,26 +298,33 @@ def generate_excel(request, pk):
     font_style.font.bold = True
 
     columns = ['Roll No', 'First name', 'Last name', 'Division', 'Student']
+    col_length = len(columns) - 1
+    ques_len = len(ques)
 
-    for col_num in range(len(columns)):
+    for col_num in range(col_length):
         ws.write(row_num, col_num, columns[col_num], font_style)
 
-    for col_num in range(len(columns), len(ques)+len(columns)):
-        ws.write(row_num, col_num, ques[col_num-len(columns)].question, font_style)
+    for col_num in range(col_length, col_length + ques_len):
+        ws.write(row_num, col_num, ques[col_num-col_length].question, font_style)
+
+    ws.write(row_num, col_length + ques_len, 'Score', font_style)
 
     row_num += 1
     res_per_ques = [0 for x in range(len(ques))]
     for i in range(len(responses)):
-        for j in range(len(responses[i])):
+        score = 0
+        for j in range(col_length):
             ws.write(row_num, j, responses[i][j], font_style)
-        for k in range(len(ques)):
+        for k in range(ques_len):
             res = QuestionResponse.objects.filter(question=ques[k], quiz_response__student=responses[i][-1]).first()
-            ws.write(row_num, k+len(responses[0]), res.que_response, font_style)
+            ws.write(row_num, k+col_length, res.que_response, font_style)
             if res.que_response.upper() == ques[k].correct_ans.upper():
+                score += 1
                 res_per_ques[k] += 1
+        ws.write(row_num, col_length+ques_len, f'{score}/{ques_len}', font_style)
         row_num += 1
-    for i in range(len(ques)):
-        ws.write(row_num, len(columns)+i, res_per_ques[i], font_style)
+    for i in range(ques_len):
+        ws.write(row_num, col_length+i, res_per_ques[i], font_style)
     wb.save(response)
     return response
     # return HttpResponse("<h2>Download Excel</h2>")

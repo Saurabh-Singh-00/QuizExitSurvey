@@ -33,6 +33,16 @@ class TeacherRegisterForm(UserCreationForm):
             raise ValidationError("Please use the email provided by the college")
         return self.cleaned_data["email"]
 
+    def clean_username(self):
+        username = self.cleaned_data['username'].strip().upper()
+        if  username == '':
+            raise ValidationError("The username is required")
+        regex = re.compile(r"TEC\d{3,4}")
+        if regex.search(username):
+            return username
+        else:
+            raise ValidationError("username should be your ID")
+
     @transaction.atomic
     def save(self, commit=True):
         user = super().save(commit=False)

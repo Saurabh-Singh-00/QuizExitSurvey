@@ -53,10 +53,13 @@ class QuizForm(forms.ModelForm):
             return valid
         subject = self.cleaned_data['subject']
         for batch in self.cleaned_data['batches']:
-            if subject not in Subject.objects.filter(batch=batch):
-                self.errors['no_subject'] = 'This subject is not available for Batch: ' + str(batch)
+            try:
+                if subject not in Subject.objects.filter(batch=batch):
+                    self.errors['no_subject'] = 'This subject is not available for Batch: ' + str(batch)
+                    return False
+            except KeyError:
+                self.errors['no_batch'] = "Please select a batch: "
                 return False
-
         return True
 
 

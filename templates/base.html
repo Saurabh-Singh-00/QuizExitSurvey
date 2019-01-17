@@ -24,7 +24,6 @@
             <title>Home</title>
         {% endif %}
     {% endblock title %}
-
 </head>
 <style>
     body {
@@ -175,9 +174,7 @@
     </div>
 </nav>
 <main role="main" class="container">
-    {% block content %}
-
-    {% endblock content %}
+    {% block content %}{% endblock content %}
 </main>
 
 <!-- Optional JavaScript -->
@@ -212,6 +209,5 @@
     }
 </script>
 {% block scripts %}{% endblock %}
-
 </body>
 </html>

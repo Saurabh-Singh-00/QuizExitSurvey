@@ -26,7 +26,7 @@ SECRET_KEY = 'pn+1l^$&iwxh(v*p+4g7)w!tg(6(z02g1ilk5llv$+ksf@pzw!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://terna-quiz-survey.herokuapp.com/', "*"]
 
 # Application definition
 

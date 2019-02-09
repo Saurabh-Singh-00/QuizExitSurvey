@@ -284,7 +284,7 @@ def generate_excel(request, pk):
     response['Content-Disposition'] = f'attachment; filename="{file_name}.xls"'
 
     wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet(f'{quiz.subject.name}')
+    ws = wb.add_sheet(f'{quiz.subject.name.strip()}')
 
     # Sheet header, first row
     row_num = 0

@@ -17,7 +17,6 @@ class Student(models.Model):
 
 class Subject(models.Model):
     name = models.CharField(max_length=50)
-    has_lab = models.BooleanField()
 
     def __str__(self):
         return f"{self.name.capitalize()}"

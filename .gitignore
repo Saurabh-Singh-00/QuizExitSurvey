@@ -1,14 +1,13 @@
 #Ignore database file
 db.sqlite3
 
-#Ignore migrations
-**/migrations
-
 #Ignore .idea folder
 **/.idea
 
 #Ignore Virtual Environment
-venv/
+venv
+*.pyc
 
-#Ignore __pycache__ folder
-**/__pycache__
+static
+
+.env

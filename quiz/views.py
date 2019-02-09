@@ -265,11 +265,6 @@ class QuizUpdateView(UpdateView):
         return reverse_lazy('view-quiz', kwargs={'pk': quiz.pk})
 
 
-
-
-
-
-
 @login_required
 @teacher_required
 def generate_excel(request, pk):

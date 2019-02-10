@@ -126,8 +126,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'staticfiles'),
 )
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Added Auth for Abstract User

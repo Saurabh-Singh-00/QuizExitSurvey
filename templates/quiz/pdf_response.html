@@ -1,13 +1,15 @@
-{% load static %}
+{% load static  %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <link href='https://fonts.googleapis.com/css?family=Allura' rel='stylesheet'>
     <meta charset="UTF-8">
     <style>
-        div.d {
-            font-family: 'Allura','Times New Roman', sans-serif;
-            font-size: 22px;
+        @font-face {
+            font-family: Allura;
+            font-weight: bold;
+            font-style: italic;
+            font-size: 200%;
         }
 
         div.a {
@@ -23,7 +25,7 @@
             font-size: 180%;
         }
 
-        div.c {
+        div.c{
             font-size: 150%;
         }
 
@@ -37,11 +39,10 @@
 
         <h5 style="font-size: 200%">{{ quiz_response.quiz.title }} - {{ quiz_response.quiz.subject.name }}</h5>
     </div>
-    <div class="b">
+    <div class="b" >
         Name: {{ quiz_response.student.student.first_name }} {{ quiz_response.student.student.last_name }}<br>
         Batch: {{ quiz_response.student.batch }}<br>
-        Score: {{ quiz_response.score }}
-        <hr>
+        Score: {{ quiz_response.score }}<hr>
     </div>
     <div class="c">
         {% for response in ques_responses %}
@@ -57,8 +58,8 @@
     <br>
     <br>
     <hr>
-    <div class="d">
-        <p style="color:darkblue;  font-size:600%">{{ quiz_response.student.student.first_name }} {{ quiz_response.student.student.last_name }}</p>
+    <div class="a">
+        <p style="color:darkblue; font-family: Allura, 'Times New Roman', sans-serif; font-size:600%">{{ quiz_response.student.student.first_name }} {{ quiz_response.student.student.last_name }}</p>
     </div>
 {% endblock %}
 </body>

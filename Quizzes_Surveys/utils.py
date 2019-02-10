@@ -3,9 +3,9 @@ import os
 
 def link_callback(uri, rel):
     # use short variable names
-    sUrl = r'/staticfiles/'      # Typically /staticfiles/
-    sRoot = os.path.expanduser('~/PycharmProjects/') + "/QuizExitSurvey/staticfiles/"# Typically /home/userX/project_static/
-    mUrl = '/staticfiles/media/'     # Typically /staticfiles/media/
+    sUrl = r'/static/'      # Typically /static/
+    sRoot = os.path.expanduser('~/PycharmProjects/') + "/QuizExitSurvey/static/"# Typically /home/userX/project_static/
+    mUrl = '/static/media/'     # Typically /static/media/
     mRoot = ''     # Typically /home/userX/project_static/media/
 
     # convert URIs to absolute system paths

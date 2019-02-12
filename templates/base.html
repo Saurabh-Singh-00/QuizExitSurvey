@@ -158,11 +158,31 @@
                         </a>
                     {% elif user.is_authenticated and not user.is_teacher %}
                         <a href="{% url 'student-profile' user.pk %}" class="nav-link">
-                        {% if user.first_name == "Vivek" and user.last_name == "Singh" %}
-                            Pranam Prabhu
-                        {% else %}
+                            {#                            {% if user.first_name == "Vikas" and user.last_name == "Rajbhar" %}#}
+                            {#                                Bhagwan Rajbar#}
+                            {#                            {% else %}#}
+                            {#                                {% if user.first_name == "Priyanka" and user.last_name == "Sanap" %}#}
+                            {#                                    Namaskar, Taai#}
+                            {#                                {% endif %}#}
+                            {#                            {% else %}#}
+                            {#                                {% if user.first_name == "Kirthana" and user.last_name == "Nambiar" %}#}
+                            {#                                    Kirtu, the Bus#}
+                            {#                                {% endif %}#}
+                            {#                            {% else %}#}
+                            {#                                {% if user.first_name == "Vidula" and user.last_name == "Raje"%}#}
+                            {#                                    Nightcore Zindabaad#}
+                            {#                                {% endif %}#}
+                            {#                            {% else %}#}
+                            {#                                {% if user.first_name == "Ikshula" and user.last_name == "Janbandhu" %}#}
+                            {#                                    Ikshulalalala#}
+                            {#                                {% endif %}#}
+                            {#                            {% else %}#}
+                            {#                                {% if user.first_name == "Sameer" and user.last_name == "Mahajan" %}#}
+                            {#                                    Chalo Princeton#}
+                            {#                                {% endif %}#}
+                            {#                            {% else %}#}
                             Hello! {{ user.first_name }}
-                        {% endif %}
+                            {#                            {% endif %}#}
                         </a>
                     {% endif %}
                 </li>
@@ -201,10 +221,19 @@
     });
 </script>
 <script>
-    let wUrl = window.location.href.toString();
-    if (wUrl.includes('home') || wUrl.includes('quiz')) {
+    /* let wUrl = window.location.href.toString();
+    let baseURL = 'https://terna-quiz-survey.herokuapp.com/';
+    if (wUrl.includes('home') || wUrl.substring(baseURL.length).includes('quiz')) {
         document.getElementById('quiz-tag').classList.add('active');
-    }else if (wUrl.includes('survey') || wUrl.includes('exit')) {
+    } else if (wUrl.substring(baseURL.length).includes('survey') || wUrl.substring(baseURL.length).includes('exit')) {
+        document.getElementById('survey-tag').classList.add('active');
+    }*/
+    let wUrl = window.location.href.toString();
+    let baseURL = 'https://terna-quiz-survey.herokuapp.com/';
+    if (wUrl.includes('home') || wUrl.substring(baseURL.length - 1, wUrl.length).includes('quiz')) {
+        document.getElementById('quiz-tag').classList.add('active');
+    }
+    if (wUrl.substring(baseURL.length - 1, wUrl.length).includes('survey') || wUrl.substring(baseURL.length).includes('exit')) {
         document.getElementById('survey-tag').classList.add('active');
     }
 </script>

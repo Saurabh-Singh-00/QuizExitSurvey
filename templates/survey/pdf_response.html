@@ -4,14 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        @font-face {
-            font-family: LDFineScript4;
-            src: url('{% static "ldfinescript4.ttf" %}');
-            font-weight: bold;
-            font-style: italic;
-            font-size: 200%;
-        }
-
         div.a {
             text-align-all: center;
             text-align: center;
@@ -19,16 +11,12 @@
             margin-right: auto;
             margin-left: auto;
         }
-
-
         div.b {
             font-size: 180%;
         }
-
         div.c {
             font-size: 150%;
         }
-
     </style>
     <title>Download Response</title>
 </head>
@@ -57,11 +45,8 @@
     <br>
     <br>
     <div class="a">
-        <p style="color:darkblue; font-family: 'LDFineScript4', 'Times New Roman', sans-serif; font-size:600%">{{ survey_response.student.student.first_name }} {{ survey_response.student.student.last_name }}</p>
+        <p style="color:darkblue; font-style: italic; font-family: 'Arial', 'Times New Roman', sans-serif; font-size:600%">{{ survey_response.student.student.first_name }} {{ survey_response.student.student.last_name }}</p>
     </div>
-    <h4>
-
-    </h4>
 {% endblock %}
 </body>
 </html>

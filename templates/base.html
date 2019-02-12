@@ -143,7 +143,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link disabled" href="{% url 'about-us' %}">About Us</a>
+                <a class="nav-link disabled" id="about-tag" href="{% url 'about-us' %}">About Us</a>
             </li>
         </ul>
     </div>
@@ -235,6 +235,9 @@
     }
     if (wUrl.substring(baseURL.length - 1, wUrl.length).includes('survey') || wUrl.substring(baseURL.length).includes('exit')) {
         document.getElementById('survey-tag').classList.add('active');
+    }
+    if (wUrl.includes("about")) {
+        document.getElementById('about-tag').classList.add('active');
     }
 </script>
 {% block scripts %}{% endblock %}

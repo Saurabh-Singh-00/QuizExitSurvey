@@ -1,22 +1,27 @@
 {% extends 'base.html' %}
+{% block title %}
+    <title>About Us</title>
+{% endblock %}
 {% block content %}
     <h1 class="mt-3">About Us.</h1>
+    <hr>
     <div class="row mt-2 mb-2">
-        <div class="col-sm-12 col-md-6">
+        <div class="col-sm-12 offset-md-1 col-md-4 mb-2">
             <div class="card ml-3 mr-3">
                 <img class="card-img-top" width="286px" height="180px"
                      src="https://www.cnsmnt.com/wp-content/uploads/2018/01/goku-0_19cy.jpg" alt="Anonymous">
-                <h5 class="card-title">Anonymous</h5>
+                <h4 class="card-title mt-2 ml-4">Vedang Naik (Vean)</h4>
                 <div class="card-body">
                     <p class="card-text">Curious about everything.</p>
                 </div>
             </div>
         </div>
-        <div class="col-sm-12 col-md-6">
+        <div class="col-sm-12 offset-md-1 col-md-4 mb-2">
             <div class="card ml-3 mr-3">
                 <img class="card-img-top" width="286px" height="180px"
-                     src="https://www.screengeek.net/wp-content/uploads/2018/01/batman-dc-comics.jpg" alt="Anonymous">
-                <h5 class="card-title">Anonymous</h5>
+                     src="https://www.screengeek.net/wp-content/uploads/2018/01/batman-dc-comics.jpg"
+                     alt="Anonymous">
+                <h4 class="card-title mt-2 ml-4">Saurabh Singh</h4>
                 <div class="card-body">
                     <p class="card-text">I don't know how to write code.</p>
                 </div>
@@ -25,9 +30,10 @@
     </div>
     <h3 class="mt-3">If you feel that this project helped you in any way, shape or form, consider donating to these
         charities</h3>
-    <a class="mt-3 mb-3 text-center nav-link" href="https://miraclefoundationindia.in/donate/">Help children</a><br>
-    <a class="mt-3 mb-3 text-center nav-link" href="https://www.helpageindia.org/donate">Help the elderly</a><br>
-    <a class="mt-3 mb-3 text-center nav-link" href="https://helpanimalsindia.org/donate">Help Animals</a><br><hr><br>
-    <a class="mt-3 mb-3 text-center nav-link" href="https://github.com/Saurabh-Singh-00/QuizExitSurvey">Contribute to
+    <a class="mt-1 nav-link" href="https://miraclefoundationindia.in/donate/">Help children</a>
+    <a class="mt-1 nav-link" href="https://www.helpageindia.org/donate">Help the elderly</a>
+    <a class="mt-1 nav-link" href="https://helpanimalsindia.org/donate">Help Animals</a>
+    <hr>
+    <a class="mt-1 mb-3 nav-link" href="https://github.com/Saurabh-Singh-00/QuizExitSurvey">Contribute to
         our code, to simplify the life of Students.</a><br>
 {% endblock content %}

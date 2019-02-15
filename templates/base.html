@@ -159,16 +159,16 @@
                         <a href="{% url 'student-profile' user.pk %}" class="nav-link">
                             {% if user.first_name == "Vikas" and user.last_name == "Rajbhar" %}
                                 Bhagwan Rajbar
-                                {% elif user.first_name == "Priyanka" and user.last_name == "Sanap" %}
-                                    Namaskar, Taai
-                                {% elif user.first_name == "Kirthana" and user.last_name == "Nambiar" %}
-                                    Kirtu, the Bus
-                                {% elif user.first_name == "Vidula" and user.last_name == "Raje" %}
-                                    Nightcore Zindabaad
-                                {% elif user.first_name == "Ikshula" and user.last_name == "Janbandhu" %}
-                                    Ikshulalalala
-                                {% elif user.first_name == "Sameer" and user.last_name == "Mahajan" %}
-                                    Chalo Princeton
+                            {% elif user.first_name == "Priyanka" and user.last_name == "Sanap" %}
+                                Namaskar, Taai
+                            {% elif user.first_name == "Kirthana" and user.last_name == "Nambiar" %}
+                                Kirtu, the Bus
+                            {% elif user.first_name == "Vidula" and user.last_name == "Raje" %}
+                                Nightcore Zindabaad
+                            {% elif user.first_name == "Ikshula" and user.last_name == "Janbandhu" %}
+                                Ikshulalalala
+                            {% elif user.first_name == "Sameer" and user.last_name == "Mahajan" %}
+                                Chalo Princeton
                             {% else %}
                                 Hello! {{ user.first_name }}
                             {% endif %}

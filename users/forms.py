@@ -58,7 +58,7 @@ class TeacherRegisterForm(UserCreationForm):
 class StudentRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
     batch = forms.ModelChoiceField(queryset=Batch.objects.all(), required=True, )
-    roll_no = forms.IntegerField()
+    roll_no = forms.IntegerField(min_value=1, max_value=150)
 
     class Meta:
         model = User
@@ -78,7 +78,7 @@ class StudentRegisterForm(UserCreationForm):
         username = self.cleaned_data['username'].upper()
         if username.strip() == '':
             raise ValidationError("username is required.")
-        regex = re.compile(r"TUS?\d(F|S|SF)[12]\d[12]\d{3,4}")
+        regex = re.compile(r"TUS?\d(F|S|SF)[12]\d[12]\d[012]\d\d")
         if regex.search(username):
             return username
         else:

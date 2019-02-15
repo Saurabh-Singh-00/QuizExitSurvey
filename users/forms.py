@@ -91,6 +91,8 @@ class StudentRegisterForm(UserCreationForm):
         try:
             if s.batch == batch:
                 raise ValidationError("This roll number is currently assigned to " + str(s))
+            else:
+                return curr_roll
         except AttributeError:
             return curr_roll
 

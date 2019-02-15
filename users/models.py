@@ -50,12 +50,12 @@ class Batch(models.Model):
 
     division = models.CharField(max_length=10, choices=DIVISION_CHOICES, default="A")
 
-    BATCH_CHOICES = {
+    BATCH_CHOICES = (
         ("1", "1"),
         ("2", "2"),
         ("3", "3"),
         ("4", "4"),
-    }
+    )
 
     batch = models.CharField(max_length=10, choices=BATCH_CHOICES, default="1")
 

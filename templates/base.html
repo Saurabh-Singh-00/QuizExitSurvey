@@ -118,7 +118,7 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#"><i class="fas fa-book-open mr-2"></i>Quiz</a>
+    <a class="navbar-brand" href="{% url 'login' %}"><i class="fas fa-book-open mr-2"></i>Quiz</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -127,7 +127,6 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-
                 {% if user.is_authenticated and user.is_teacher %}
                     <a id="quiz-tag" class="nav-link" href="{% url 'teacher-home' user.pk %}">Quiz </a>
                 {% elif user.is_authenticated and not user.is_teacher %}
@@ -158,31 +157,31 @@
                         </a>
                     {% elif user.is_authenticated and not user.is_teacher %}
                         <a href="{% url 'student-profile' user.pk %}" class="nav-link">
-                            {#                            {% if user.first_name == "Vikas" and user.last_name == "Rajbhar" %}#}
-                            {#                                Bhagwan Rajbar#}
-                            {#                            {% else %}#}
-                            {#                                {% if user.first_name == "Priyanka" and user.last_name == "Sanap" %}#}
-                            {#                                    Namaskar, Taai#}
-                            {#                                {% endif %}#}
-                            {#                            {% else %}#}
-                            {#                                {% if user.first_name == "Kirthana" and user.last_name == "Nambiar" %}#}
-                            {#                                    Kirtu, the Bus#}
-                            {#                                {% endif %}#}
-                            {#                            {% else %}#}
-                            {#                                {% if user.first_name == "Vidula" and user.last_name == "Raje"%}#}
-                            {#                                    Nightcore Zindabaad#}
-                            {#                                {% endif %}#}
-                            {#                            {% else %}#}
-                            {#                                {% if user.first_name == "Ikshula" and user.last_name == "Janbandhu" %}#}
-                            {#                                    Ikshulalalala#}
-                            {#                                {% endif %}#}
-                            {#                            {% else %}#}
-                            {#                                {% if user.first_name == "Sameer" and user.last_name == "Mahajan" %}#}
-                            {#                                    Chalo Princeton#}
-                            {#                                {% endif %}#}
-                            {#                            {% else %}#}
-                            Hello! {{ user.first_name }}
-                            {#                            {% endif %}#}
+                            {% if user.first_name == "Vikas" and user.last_name == "Rajbhar" %}
+                                Bhagwan Rajbar
+                            {% else %}
+                                {% if user.first_name == "Priyanka" and user.last_name == "Sanap" %}
+                                    Namaskar, Taai
+                                {% endif %}
+                            {% else %}
+                                {% if user.first_name == "Kirthana" and user.last_name == "Nambiar" %}
+                                    Kirtu, the Bus
+                                {% endif %}
+                            {% else %}
+                                {% if user.first_name == "Vidula" and user.last_name == "Raje" %}
+                                    Nightcore Zindabaad
+                                {% endif %}
+                            {% else %}
+                                {% if user.first_name == "Ikshula" and user.last_name == "Janbandhu" %}
+                                    Ikshulalalala
+                                {% endif %}
+                            {% else %}
+                                {% if user.first_name == "Sameer" and user.last_name == "Mahajan" %}
+                                    Chalo Princeton
+                                {% endif %}
+                            {% else %}
+                                Hello! {{ user.first_name }}
+                            {% endif %}
                         </a>
                     {% endif %}
                 </li>

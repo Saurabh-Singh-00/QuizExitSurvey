@@ -159,26 +159,16 @@
                         <a href="{% url 'student-profile' user.pk %}" class="nav-link">
                             {% if user.first_name == "Vikas" and user.last_name == "Rajbhar" %}
                                 Bhagwan Rajbar
-                            {% else %}
-                                {% if user.first_name == "Priyanka" and user.last_name == "Sanap" %}
+                                {% elif user.first_name == "Priyanka" and user.last_name == "Sanap" %}
                                     Namaskar, Taai
-                                {% endif %}
-                            {% else %}
-                                {% if user.first_name == "Kirthana" and user.last_name == "Nambiar" %}
+                                {% elif user.first_name == "Kirthana" and user.last_name == "Nambiar" %}
                                     Kirtu, the Bus
-                                {% endif %}
-                            {% else %}
-                                {% if user.first_name == "Vidula" and user.last_name == "Raje" %}
+                                {% elif user.first_name == "Vidula" and user.last_name == "Raje" %}
                                     Nightcore Zindabaad
-                                {% endif %}
-                            {% else %}
-                                {% if user.first_name == "Ikshula" and user.last_name == "Janbandhu" %}
+                                {% elif user.first_name == "Ikshula" and user.last_name == "Janbandhu" %}
                                     Ikshulalalala
-                                {% endif %}
-                            {% else %}
-                                {% if user.first_name == "Sameer" and user.last_name == "Mahajan" %}
+                                {% elif user.first_name == "Sameer" and user.last_name == "Mahajan" %}
                                     Chalo Princeton
-                                {% endif %}
                             {% else %}
                                 Hello! {{ user.first_name }}
                             {% endif %}

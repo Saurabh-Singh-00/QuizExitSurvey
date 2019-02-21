@@ -205,7 +205,7 @@ class LoginView(View):
         return render(request, 'users/login.html', {'form': AuthenticationForm()})
 
     def post(self, request):
-        username = request.POST['username'].upper()
+        username = request.POST['username'].upper().strip()
         password = request.POST['password']
         user = authenticate(username=username, password=password)
 

@@ -215,7 +215,8 @@ def view_survey_stats(request, pk):
                 no_res += str(student.roll_no) + ", "
         batches.append(no_res[:-2])
     context = {
-        'batches': batches
+        'batches': batches,
+        'survey': survey
     }
     return render(request, 'survey/view_survey_stats.html', context)
 
@@ -265,11 +266,12 @@ def generate_excel(request, pk):
     ).filter(survey=survey).order_by('student__roll_no')
     response = HttpResponse(content_type='application/ms-excel')
     file_name = 'Survey ' + '-'.join([str(x) for x in survey.batches.all()])
-    print(file_name)
+
     response['Content-Disposition'] = f'attachment; filename="{file_name}.xls"'
-    print(responses)
     wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet(f'{survey.title}')
+    ws_temp = survey.subject.name.replace(" ", "")
+    ws_name = ws_temp if len(ws_temp) < 25 else ws_temp[:20]
+    ws = wb.add_sheet(f'{ws_name}')
 
     # Sheet header, first row
     row_num = 0

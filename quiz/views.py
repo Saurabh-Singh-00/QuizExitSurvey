@@ -151,7 +151,9 @@ def edit_quiz(request, opk, npk):
     if request.method == 'GET':
         formset = QuestionFormSet(request.GET or None, initial=questions)
     elif request.method == 'POST':
-        formset = QuestionFormSet(request.POST, initial=questions)
+        formset = QuestionFormSet(request.POST, initial=[
+            {'question': x['question'], 'option_a': x['option_a'], 'option_b': x['option_b'], 'option_c': x['option_c'],
+             'option_d': x['option_d'], 'correct_answer': x['correct_ans']} for x in questions])
         if formset.is_valid():
             if opk == npk:
                 Question.objects.filter(quiz=Quiz.objects.filter(pk=opk).first()).delete()
@@ -234,7 +236,6 @@ def view_quiz_stats(request, pk):
     return render(request, 'survey/view_survey_stats.html', context)
 
 
-
 @method_decorator([login_required, teacher_required], name='dispatch')
 class QuizDeleteView(UserPassesTestMixin, DeleteView):
     model = Quiz
@@ -280,11 +281,12 @@ def generate_excel(request, pk):
     ).filter(quiz=quiz)
     response = HttpResponse(content_type='application/ms-excel')
     file_name = 'Quiz ' + '-'.join([str(x) for x in quiz.batches.all()])
-    print(file_name)
     response['Content-Disposition'] = f'attachment; filename="{file_name}.xls"'
 
     wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet(f'{quiz.subject.name.replace(" ", "")}')
+    ws_temp = quiz.subject.name.replace(" ", "")
+    ws_name = ws_temp if len(ws_temp) < 25 else ws_temp[:20]
+    ws = wb.add_sheet(f'{ws_name}')
 
     # Sheet header, first row
     row_num = 0
@@ -300,7 +302,7 @@ def generate_excel(request, pk):
         ws.write(row_num, col_num, columns[col_num], font_style)
 
     for col_num in range(col_length, col_length + ques_len):
-        ws.write(row_num, col_num, ques[col_num-col_length].question, font_style)
+        ws.write(row_num, col_num, ques[col_num - col_length].question, font_style)
 
     ws.write(row_num, col_length + ques_len, 'Score', font_style)
     ws.write(row_num, col_length + ques_len + 1, 'CO Attain', font_style)
@@ -313,15 +315,15 @@ def generate_excel(request, pk):
             ws.write(row_num, j, responses[i][j], font_style)
         for k in range(ques_len):
             res = QuestionResponse.objects.filter(question=ques[k], quiz_response__student=responses[i][-1]).first()
-            ws.write(row_num, k+col_length, res.que_response, font_style)
+            ws.write(row_num, k + col_length, res.que_response, font_style)
             if res.que_response.upper() == ques[k].correct_ans.upper():
                 score += 1
                 res_per_ques[k] += 1
-        ws.write(row_num, col_length+ques_len, f'{score}/{ques_len}', font_style)
-        ws.write(row_num, col_length + ques_len + 1, '1' if score/ques_len > 0.5 else '0', font_style)
+        ws.write(row_num, col_length + ques_len, f'{score}/{ques_len}', font_style)
+        ws.write(row_num, col_length + ques_len + 1, '1' if score / ques_len > 0.5 else '0', font_style)
         row_num += 1
     for i in range(ques_len):
-        ws.write(row_num, col_length+i, res_per_ques[i], font_style)
+        ws.write(row_num, col_length + i, res_per_ques[i], font_style)
     wb.save(response)
     return response
     # return HttpResponse("<h2>Download Excel</h2>")

@@ -5,6 +5,7 @@
 {% endblock %}
 {% block content %}
     <div class="xyz">
+    <div class="alert alert-warning">All the questions are compulsory</div>
     <form method="post">
         {% csrf_token %}
         <legend>{{ quiz.title }} - {{ quiz.subject.name }}</legend>
@@ -16,4 +17,3 @@
     </form>
     </div>
 {% endblock %}
-s

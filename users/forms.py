@@ -35,7 +35,7 @@ class TeacherRegisterForm(UserCreationForm):
 
     def clean_username(self):
         username = self.cleaned_data['username'].strip().upper()
-        if  username == '':
+        if username == '':
             raise ValidationError("The username is required")
         regex = re.compile(r"TEC\d{3,4}")
         if regex.search(username):
@@ -75,8 +75,8 @@ class StudentRegisterForm(UserCreationForm):
         return self.cleaned_data["last_name"].capitalize()
 
     def clean_username(self):
-        username = self.cleaned_data['username'].upper()
-        if username.strip() == '':
+        username = self.cleaned_data['username'].upper().strip()
+        if username == '':
             raise ValidationError("username is required.")
         regex = re.compile(r"TUS?\d(F|S|SF)[12]\d[12]\d[012]\d\d")
         if regex.search(username):
@@ -103,7 +103,7 @@ class StudentRegisterForm(UserCreationForm):
         if commit:
             user.save()
             Student.objects.create(student=user, batch=self.cleaned_data.get('batch'),
-                                             roll_no=self.cleaned_data.get('roll_no'))
+                                   roll_no=self.cleaned_data.get('roll_no'))
         return user
 
 

@@ -147,9 +147,10 @@ def edit_quiz(request, opk, npk):
         questions = Question.objects.filter(quiz=o_quiz[0]).values()
     except IndexError:
         questions = {}
-
     if request.method == 'GET':
-        formset = QuestionFormSet(request.GET or None, initial=questions)
+        formset = QuestionFormSet(request.GET or None, initial=[
+            {'question': x['question'], 'option_a': x['option_a'], 'option_b': x['option_b'], 'option_c': x['option_c'],
+             'option_d': x['option_d'], 'correct_answer': x['correct_ans']} for x in questions])
     elif request.method == 'POST':
         formset = QuestionFormSet(request.POST, initial=[
             {'question': x['question'], 'option_a': x['option_a'], 'option_b': x['option_b'], 'option_c': x['option_c'],

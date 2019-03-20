@@ -78,7 +78,7 @@ class StudentRegisterForm(UserCreationForm):
         username = self.cleaned_data['username'].upper().strip()
         if username == '':
             raise ValidationError("username is required.")
-        regex = re.compile(r"TUS?\d(F|S|SF)[12]\d[12]\d[012]\d\d")
+        regex = re.compile(r"TUS?\d(F|S|SF)[12]\d[12]\d[012]?\d\d")
         if regex.search(username):
             return username
         else:

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}
     <title>
-    {{ quiz.title }}
+        {{ quiz.title }}
     </title>
 {% endblock %}
 {% block content %}
@@ -23,7 +23,8 @@
                 Currently assigned to: {{ batches }}
                 {% if quiz.author == user.teacher %}
                     <a class="btn btn-secondary" href="{% url 'view-quiz-stats' quiz.pk %}">Details</a>
-                <a href="{% url 'generate-excel' quiz.pk %}"><i class="fas fa-file-download mr-2 ml-4"></i>Download Excel</a>
+                    <a href="{% url 'generate-excel' quiz.pk %}"><i class="fas fa-file-download mr-2 ml-4"></i>Download
+                        Excel</a>
                 {% endif %}
             </small>
         </legend>
@@ -32,8 +33,8 @@
             <p>Question: {{ question.question }}</p>
             <p>A: {{ question.option_a }}</p>
             <p>B: {{ question.option_b }}</p>
-            <p>C: {{ question.option_c }}</p>
-            <p>D: {{ question.option_d }}</p>
+                <p>C: {{ question.option_c }}</p>
+                <p>D: {{ question.option_d }}</p>
             <p>Correct Ans: {{ question.correct_ans }}</p>
             <hr>
         {% endfor %}
@@ -50,7 +51,9 @@
                         <div class="col-sm-12 col-md-6">
                             <canvas id="chart-{{ forloop.counter0 }}"></canvas>
                             <div class="row">
-                                <a href="" download="{{ i.question }}.png" class="btn btn-success mr-auto ml-auto" id="btn-img-{{ forloop.counter0 }}" onclick="downloadImage(this, event, {{ forloop.counter0 }})">Download Image</a>
+                                <a href="" download="{{ i.question }}.png" class="btn btn-success mr-auto ml-auto"
+                                   id="btn-img-{{ forloop.counter0 }}"
+                                   onclick="downloadImage(this, event, {{ forloop.counter0 }})">Download Image</a>
                             </div>
                         </div>
                     {% endfor %}
@@ -100,8 +103,8 @@
             });
         {% endfor %}
 
-    function downloadImage(button, event, id) {
-        button.href = document.getElementById('chart-'+id).toDataURL("image/png")
-    }
+        function downloadImage(button, event, id) {
+            button.href = document.getElementById('chart-' + id).toDataURL("image/png")
+        }
     </script>
 {% endblock scripts %}

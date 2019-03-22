@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}
+    <title>Quiz Stats: {{ quiz.title }}</title>
+{% endblock %}
+{% block content %}
+    <div class="xyz">
+    <h3>Not yet responded</h3><hr><br>
+    {% for batch in batches %}
+        <p>{{ batch }}</p><br>
+    {% endfor %}
+    </div>
+{% endblock %}

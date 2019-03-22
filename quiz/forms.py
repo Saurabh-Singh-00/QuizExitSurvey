@@ -10,8 +10,8 @@ class QuestionForm(forms.Form):
     }))
     option_a = forms.CharField(max_length=100)
     option_b = forms.CharField(max_length=100)
-    option_c = forms.CharField(max_length=100)
-    option_d = forms.CharField(max_length=100)
+    option_c = forms.CharField(max_length=100, required=False)
+    option_d = forms.CharField(max_length=100, required=False)
     options = [
         ("A", "A"),
         ("B", "B"),

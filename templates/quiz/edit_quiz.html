@@ -29,6 +29,9 @@
 
 {% block scripts %}
     <script type='text/javascript'>
+
+        let latest_form = null;
+
         function updateElementIndex(el, prefix, ndx) {
             let id_regex = new RegExp('(' + prefix + '-\\d+)');
             let replacement = prefix + '-' + ndx;
@@ -53,6 +56,7 @@
             total++;
             $('#id_' + prefix + '-TOTAL_FORMS').val(total);
             $(selector).after(newElement);
+            latest_form = newElement;
             {#let conditionRow = $('.form-selector:not(:last)');#}
             {#conditionRow.find('.btn.add-form-row')#}
             {#    .removeClass('btn-success').addClass('btn-danger')#}
@@ -82,6 +86,9 @@
         $(document).on('click', '.add-form-row', function (e) {
             e.preventDefault();
             cloneMore('.form-selector:last', 'form');
+            if(latest_form != null) {
+                latest_form.scrollIntoView();
+            }
             return false;
         });
         $(document).on('click', '.remove-form-row', function (e) {

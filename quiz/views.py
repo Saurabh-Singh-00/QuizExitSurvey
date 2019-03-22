@@ -14,6 +14,7 @@ from django.views.generic import UpdateView, DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from .forms import QuestionFormSet, QuizForm, TakeQuizForm
 from users.models import Batch, Student
+import functools
 
 
 @login_required
@@ -203,7 +204,7 @@ def view_quiz(request, pk):
                 else:
                     chosen[3] += 1
             no_responses.append(chosen)
-        print(no_responses)
+        # print(no_responses)
     user = request.user.teacher
     context = {
         'questions': questions,
@@ -223,18 +224,20 @@ def view_quiz_stats(request, pk):
     batch_queryset = Batch.objects.filter(quiz=quiz)
     batches = []
     for batch in batch_queryset:
-        no_res = str(batch) + ": "
+        no_res = []
         stu_list = Student.objects.filter(batch=batch)
         print(stu_list)
         for student in stu_list:
             s = QuizResponse.objects.filter(student=student, quiz=quiz).first()
             if s is None:
-                no_res += str(student.roll_no) + ", "
-        batches.append(no_res[:-2])
+                no_res.append(student.roll_no)
+        no_res.sort()
+        no_res_str = functools.reduce(lambda x, y: str(x) + ", " + str(y), no_res)
+        batches.append(no_res_str[:-2])
     context = {
         'batches': batches
     }
-    return render(request, 'survey/view_survey_stats.html', context)
+    return render(request, 'quiz/view_quiz_stats.html', context)
 
 
 @method_decorator([login_required, teacher_required], name='dispatch')

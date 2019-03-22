@@ -232,7 +232,8 @@ def view_quiz_stats(request, pk):
             if s is None:
                 no_res.append(student.roll_no)
         no_res.sort()
-        no_res_str = functools.reduce(lambda x, y: str(x) + ", " + str(y), no_res)
+        no_res_str = str(batch) + ": "
+        no_res_str += functools.reduce(lambda x, y: str(x) + ", " + str(y), no_res)
         batches.append(no_res_str[:-2])
     context = {
         'batches': batches

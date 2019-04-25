@@ -325,7 +325,7 @@ def generate_excel(request, pk):
                 score += 1
                 res_per_ques[k] += 1
         ws.write(row_num, col_length + ques_len, f'{score}/{ques_len}', font_style)
-        ws.write(row_num, col_length + ques_len + 1, '1' if score / ques_len > 0.5 else '0', font_style)
+        ws.write(row_num, col_length + ques_len + 1, '1' if score / ques_len >= 0.5 else '0', font_style)
         row_num += 1
     for i in range(ques_len):
         ws.write(row_num, col_length + i, res_per_ques[i], font_style)
